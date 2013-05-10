@@ -1,0 +1,106 @@
+ # This is a [Parser Tools] peg grammar for an [ISBL] like language
+ #
+ # This peg parser has special annotations in the comments on the 
+ # right to associate the rules with template actions that will
+ # be evaluated when the AST of the recognosed text is executed.
+ #
+ # Procedures (or methods) for rules without annotations are provided
+ # for each rule individualy.
+ #
+ PEG isblparser (Phrase)
+	Phrase	<- WS Assign  WS EOF /
+		   WS TopExpr WS EOF 			; # action eval
+
+	TopExpr	<- RelExpr				;
+
+	RelValue<- "(" WS RelExpr WS ")" / Table	; # action eval
+ leaf:   Table 	<- Ident				;
+
+	RelExpr	<- Sum					; # action eval
+
+	ProjOp	<- "%"					; # action token
+	Tupple  <- ProjOp WS Cols			;
+ void:	 MapOp  <- "->" / "as"				;
+ leaf:   Column	<- Ident				; # action token
+
+	Project	<- Tupple
+		 / RelValue WS (ProjOp WS Cols)*	;
+	 Cols	<- Col ( WS ","? WS Col)*		;
+	 Col	<-        CFunc
+	 	 /        CMap
+	 	 /        CEqu
+		 / "!" WS CDel
+		 /        CName
+		 /        CAll				;
+	 CFunc <- Name WS "(" WS InArgs? WS "|" WS OutArgs WS ")" WS	;
+ leaf:	  InArgs<- ( Value WS ("," WS Value)* ) ?	; # action token
+ leaf:	 OutArgs<-   Name WS ("," WS Name)*		; # action token
+ leaf:    CName	<- Ident				;
+	  CMap  <- Expr WS MapOp WS Column		;
+	  CEqu  <- Column WS "=" WS Expr		;
+ leaf:    CDel	<- Ident				;
+ leaf:    CAll	<- "*"					;
+
+	SelOp	<- ":" 					; # action token
+	Select	<- Project WS (SelOp WS SelExpr)* 	;
+ leaf:	SelExpr <- Expr					; # action token
+
+	JoinOp	<- "*" / "/"				; # action token
+	Join    <- Select WS (JoinOp WS Select)* 	;
+
+	SumOp	<- "+" / "-" / "."			; # action token
+	Sum	<- Join WS (SumOp WS Join)*		;
+
+	AssOp   <- "=" / "+=" / "-=" / ":="		; # action token
+	Assign	<- Table WS "+=" WS Cols WS "?" WS RelExpr /
+		   Table WS AssOp WS RelExpr		;
+	 Comma  <- ","					; # action token
+	 Equ    <- "="					; # action token
+
+	RP	<- "("					; # action token
+	LP	<- ")"					; # action token
+
+ # These rules are elaborated to enable future tracking of
+ # the data type of scaler expressions, but that is not 
+ # implimented yet.
+ #
+ leaf:  VName 	<- Ident				;
+	Value	<- RP WS Expr WS LP / Func / NULL / Real / Int / String / VName 	; # action eval
+ leaf:	Func	<- Name RP Args? LP			; # action token
+	Args	<- Expr ("," Expr)*			; # action eval
+	StrOp	<- "||"					; # action token
+ 	StrExpr	<- Value    WS (StrOp WS Value)*	; # action eval
+	MulOp	<- "*" / "/" / "%"			; # action token
+ 	MulExpr	<- StrExpr  WS (MulOp WS StrExpr)*	; # action eval
+	AddOp   <- "+" / "-"				; # action token
+ 	AddExpr	<- MulExpr  WS (AddOp WS MulExpr)*	; # action eval
+	BitOp   <- "<<" / ">>" /  "&" / "|"		; # action token
+ 	BitExpr	<- AddExpr  WS (BitOp WS AddExpr)*	; # action eval
+	CmpOp   <- "<"  / "<=" /  ">" / ">="
+	           "="  / "==" / "!=" / "<>"
+		   "IS" / "IS NOT" / "IN" / "LIKE"
+		   "is" / "is not" / "in" / "like"
+		   "GLOB" / "MATCH" / "REGEXP"
+		   "glob" / "match" / "regexp"		; # action token
+ 	CmpExpr	<- BitExpr  WS (CmpOp WS BitExpr)*	; # action eval
+	AndOp	<- "AND" / "and"			; # action token
+ 	AndExpr	<- CmpExpr  WS (AndOp WS CmpExpr)*	; # action eval
+	 OrOp   <- "OR"  / "or"				; # action token
+ 	 OrExpr	<- AndExpr  WS ( OrOp WS AndExpr)*	; # action eval
+      	Expr	<- OrExpr				; # action eval
+
+ void:  WS	<- <space>*				;
+ leaf:  String 	<- '"' (!'"' .)* '"' /
+                   "'" (!'"' .)* "'"			;
+	NULL	<- "NULL"				; # action token
+ leaf:  Name	<- Ident				; # action token
+        Number  <- Real / Int				;
+	Real	<- Sign? (<ddigit>+)? Frac 	    	;
+	Int 	<- Sign? <ddigit>+ 		    	;
+	Sign    <- '+' / '-'                            ;
+	Frac    <- '.' <ddigit>*                        ;
+
+        Ident 	<- <alpha>[_A-Za-z0-9]*			;
+
+	EOF        <- !.                                ;
+ END;

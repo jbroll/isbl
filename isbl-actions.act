@@ -1,0 +1,19 @@
+ # [Parser Tools] peg grammar action templates.
+ #
+
+ # The "eval" action executes each of the children of the matched
+ # rule and returns the concatenation of all the results.
+ #
+ eval  { method %action { start end args } {
+	    set reply {}
+	    foreach arg $args { append reply [my {*}$arg] }
+	    set reply
+      	}
+ }
+
+ # The "token" rule returns the text that matched this rule.
+ #
+ token { method %action { start end      } {
+	    string range $string $start $end
+	}
+ }

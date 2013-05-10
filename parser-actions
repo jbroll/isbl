@@ -1,0 +1,44 @@
+#!/usr/bin/env tclkit8.6
+#
+# parser-actions.tcl
+#
+# Many parser generators allow code to be associated with the grammar rules and
+# executed as the rules are recognized.  This script is a helper program to allow 
+# action templates to be associated with [Parser Tools] peg grammar rules.
+#
+# When the peg parser returns the AST, it is executed as a tcl script.  This
+# allows the names of the PEG rules to be direclty used as parser actions.  Each
+# parser rule corrosponds to a proc (or method) of the parser.  In the grammer there
+# are many rules which share the same code, specifically many non-terminal rules whose 
+# value is the concatenated values of their child rules and leaf rules whose values
+# are the underlying string or token that the rule matched.
+#
+# This proc allows the grammer file to "declare" the type of a rule in a following
+# comment.  The rule type is then associated with a template for that type and the
+# method is declared with the rule/action name and the code from the template.
+#
+ proc parser-actions { file actions } {
+    set reply {}
+    foreach line [split [read [open $file]] \n] {
+	switch -regexp -matchvar match $line {
+	    { *([a-zA-Z0-9_]+)[ \t]*<-[^;]*; *# *action ([a-zA-Z0-9_]+)[ \t]*} {
+		append reply [string map [list %action [lindex $match 1]]	\
+		    [dict get $actions [lindex $match 2]]] \n
+	    }
+	    { *([a-zA-Z0-9_]+)[ \t]*<-}	  { set action [lindex $match 1] }
+	    {; *# *action ([a-zA-Z0-9_]+)[ \t]*$} {
+		append reply [string map [list %action $action] 		\
+		    [dict get $actions [lindex $match 1]]] \n
+	    }
+	}
+    }
+
+    set reply
+ }
+
+ set parser [lindex $argv 0]	;# A [Parser Tools] peg file w/annotations in comments.
+ set action [lindex $argv 1]	;# A file containing a dict of template procs.
+
+ puts [parser-actions $parser 				\
+	 [regsub -all -line -- {((^[ \t]*)|([ \t]+))#.*$} [read [open $action]] { }]]
+
