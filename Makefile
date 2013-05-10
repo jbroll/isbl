@@ -1,8 +1,9 @@
- PT=/home/john/pkg/tcllib-1.13/modules/pt/pt
+ PT=/Users/john/pkg/tcllib-1.13/modules/pt/pt
 
  VERSION = 1.0
 
  isbl : main.tcl isbl-$(VERSION).tm
+	cp isbl-1.0.tm isbl.vfs/modules/isbl-1.0.tm
 	sdx wrap isbl -runtime `which tclkit8.6`
 	make test
  
@@ -21,5 +22,8 @@
 
  test : 
 	tclkit8.6 ./isbl-test.tcl
+
+clean : 
+	rm -f isbl-parser.tcl
 
 
