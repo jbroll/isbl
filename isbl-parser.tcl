@@ -1,6 +1,6 @@
 ## -*- tcl -*-
 ##
-## OO-based Tcl/PARAM implementation of the parsing
+## Snit-based Tcl/PARAM implementation of the parsing
 ## expression grammar
 ##
 ##	isbl-parser
@@ -12,35 +12,49 @@
 ## Requirements
 
 package require Tcl 8.5
-package require TclOO
-package require pt::rde::oo ; # OO-based implementation of the
-			      # PARAM virtual machine
-			      # underlying the Tcl/PARAM code
-			      # used below.
+package require snit
+package require pt::rde ; # Implementation of the PARAM
+			  # virtual machine underlying the
+			  # Tcl/PARAM code used below.
 
 # # ## ### ##### ######## ############# #####################
 ##
 
-oo::class create isbl-parser {
+snit::type ::isbl-parser {
     # # ## ### ##### ######## #############
     ## Public API
 
-    superclass pt::rde::oo ; # TODO - Define this class.
-                             # Or can we inherit from a snit
-                             # class too ?
+    constructor {} {
+	# Create the runtime supporting the parsing process.
+	set myparser [pt::rde ${selfns}::ENGINE]
+	return
+    }
 
     method parse {channel} {
-	my reset $channel
-	my MAIN ; # Entrypoint for the generated code.
-	return [my complete]
+	$myparser reset $channel
+	MAIN ; # Entrypoint for the generated code.
+	return [$myparser complete]
     }
 
     method parset {text} {
-	my reset
-	my data $text
-	my MAIN ; # Entrypoint for the generated code.
-	return [my complete]
+	$myparser reset
+	$myparser data $text
+	MAIN ; # Entrypoint for the generated code.
+	return [$myparser complete]
     }
+
+    # # ## ### ###### ######## #############
+    ## Configuration
+
+    pragma -hastypeinfo    0
+    pragma -hastypemethods 0
+    pragma -hasinfo        0
+    pragma -simpledispatch 1
+
+    # # ## ### ###### ######## #############
+    ## Data structures.
+
+    variable myparser {} ; # Our instantiation of the PARAM.
 
     # # ## ### ###### ######## #############
     ## BEGIN of GENERATED CODE. DO NOT EDIT.
@@ -49,8 +63,8 @@ oo::class create isbl-parser {
     # Grammar Start Expression
     #
     
-    method MAIN {} {
-        my sym_Phrase
+    proc MAIN {} { upvar 1 myparser myparser
+        sym_Phrase
         return
     }
     
@@ -58,7 +72,7 @@ oo::class create isbl-parser {
     # value Symbol 'AddExpr'
     #
     
-    method sym_AddExpr {} {
+    proc sym_AddExpr {} { upvar 1 myparser myparser
         # x
         #     (MulExpr)
         #     (WS)
@@ -68,13 +82,13 @@ oo::class create isbl-parser {
         #             (WS)
         #             (MulExpr)
     
-        my si:value_symbol_start AddExpr
-        my sequence_11
-        my si:reduce_symbol_end AddExpr
+        $myparser si:value_symbol_start AddExpr
+        sequence_11
+        $myparser si:reduce_symbol_end AddExpr
         return
     }
     
-    method sequence_11 {} {
+    proc sequence_11 {} { upvar 1 myparser myparser
         # x
         #     (MulExpr)
         #     (WS)
@@ -84,17 +98,17 @@ oo::class create isbl-parser {
         #             (WS)
         #             (MulExpr)
     
-        my si:value_state_push
-        my sym_MulExpr
-        my si:valuevalue_part
-        my sym_WS
-        my si:valuevalue_part
-        my kleene_9
-        my si:value_state_merge
+        $myparser si:value_state_push
+        sym_MulExpr
+        $myparser si:valuevalue_part
+        sym_WS
+        $myparser si:valuevalue_part
+        kleene_9
+        $myparser si:value_state_merge
         return
     }
     
-    method kleene_9 {} {
+    proc kleene_9 {} { upvar 1 myparser myparser
         # *
         #     x
         #         (AddOp)
@@ -102,26 +116,26 @@ oo::class create isbl-parser {
         #         (MulExpr)
     
         while {1} {
-            my si:void2_state_push
-        my sequence_7
-            my si:kleene_close
+            $myparser si:void2_state_push
+        sequence_7
+            $myparser si:kleene_close
         }
         return
     }
     
-    method sequence_7 {} {
+    proc sequence_7 {} { upvar 1 myparser myparser
         # x
         #     (AddOp)
         #     (WS)
         #     (MulExpr)
     
-        my si:value_state_push
-        my sym_AddOp
-        my si:valuevalue_part
-        my sym_WS
-        my si:valuevalue_part
-        my sym_MulExpr
-        my si:value_state_merge
+        $myparser si:value_state_push
+        sym_AddOp
+        $myparser si:valuevalue_part
+        sym_WS
+        $myparser si:valuevalue_part
+        sym_MulExpr
+        $myparser si:value_state_merge
         return
     }
     
@@ -129,12 +143,12 @@ oo::class create isbl-parser {
     # value Symbol 'AddOp'
     #
     
-    method sym_AddOp {} {
+    proc sym_AddOp {} { upvar 1 myparser myparser
         # [+-]
     
-        my si:void_symbol_start AddOp
-        my si:next_class +-
-        my si:void_leaf_symbol_end AddOp
+        $myparser si:void_symbol_start AddOp
+        $myparser si:next_class +-
+        $myparser si:void_leaf_symbol_end AddOp
         return
     }
     
@@ -142,7 +156,7 @@ oo::class create isbl-parser {
     # value Symbol 'AndExpr'
     #
     
-    method sym_AndExpr {} {
+    proc sym_AndExpr {} { upvar 1 myparser myparser
         # x
         #     (CmpExpr)
         #     (WS)
@@ -152,13 +166,13 @@ oo::class create isbl-parser {
         #             (WS)
         #             (CmpExpr)
     
-        my si:value_symbol_start AndExpr
-        my sequence_25
-        my si:reduce_symbol_end AndExpr
+        $myparser si:value_symbol_start AndExpr
+        sequence_25
+        $myparser si:reduce_symbol_end AndExpr
         return
     }
     
-    method sequence_25 {} {
+    proc sequence_25 {} { upvar 1 myparser myparser
         # x
         #     (CmpExpr)
         #     (WS)
@@ -168,17 +182,17 @@ oo::class create isbl-parser {
         #             (WS)
         #             (CmpExpr)
     
-        my si:value_state_push
-        my sym_CmpExpr
-        my si:valuevalue_part
-        my sym_WS
-        my si:valuevalue_part
-        my kleene_23
-        my si:value_state_merge
+        $myparser si:value_state_push
+        sym_CmpExpr
+        $myparser si:valuevalue_part
+        sym_WS
+        $myparser si:valuevalue_part
+        kleene_23
+        $myparser si:value_state_merge
         return
     }
     
-    method kleene_23 {} {
+    proc kleene_23 {} { upvar 1 myparser myparser
         # *
         #     x
         #         (AndOp)
@@ -186,26 +200,26 @@ oo::class create isbl-parser {
         #         (CmpExpr)
     
         while {1} {
-            my si:void2_state_push
-        my sequence_21
-            my si:kleene_close
+            $myparser si:void2_state_push
+        sequence_21
+            $myparser si:kleene_close
         }
         return
     }
     
-    method sequence_21 {} {
+    proc sequence_21 {} { upvar 1 myparser myparser
         # x
         #     (AndOp)
         #     (WS)
         #     (CmpExpr)
     
-        my si:value_state_push
-        my sym_AndOp
-        my si:valuevalue_part
-        my sym_WS
-        my si:valuevalue_part
-        my sym_CmpExpr
-        my si:value_state_merge
+        $myparser si:value_state_push
+        sym_AndOp
+        $myparser si:valuevalue_part
+        sym_WS
+        $myparser si:valuevalue_part
+        sym_CmpExpr
+        $myparser si:value_state_merge
         return
     }
     
@@ -213,27 +227,27 @@ oo::class create isbl-parser {
     # value Symbol 'AndOp'
     #
     
-    method sym_AndOp {} {
+    proc sym_AndOp {} { upvar 1 myparser myparser
         # /
         #     "AND"
         #     "and"
     
-        my si:void_symbol_start AndOp
-        my choice_30
-        my si:void_leaf_symbol_end AndOp
+        $myparser si:void_symbol_start AndOp
+        choice_30
+        $myparser si:void_leaf_symbol_end AndOp
         return
     }
     
-    method choice_30 {} {
+    proc choice_30 {} { upvar 1 myparser myparser
         # /
         #     "AND"
         #     "and"
     
-        my si:void_state_push
-        my si:next_str AND
-        my si:voidvoid_branch
-        my si:next_str and
-        my si:void_state_merge
+        $myparser si:void_state_push
+        $myparser si:next_str AND
+        $myparser si:voidvoid_branch
+        $myparser si:next_str and
+        $myparser si:void_state_merge
         return
     }
     
@@ -241,7 +255,7 @@ oo::class create isbl-parser {
     # value Symbol 'Args'
     #
     
-    method sym_Args {} {
+    proc sym_Args {} { upvar 1 myparser myparser
         # x
         #     (Expr)
         #     *
@@ -249,13 +263,13 @@ oo::class create isbl-parser {
         #             ','
         #             (Expr)
     
-        my si:value_symbol_start Args
-        my sequence_40
-        my si:reduce_symbol_end Args
+        $myparser si:value_symbol_start Args
+        sequence_40
+        $myparser si:reduce_symbol_end Args
         return
     }
     
-    method sequence_40 {} {
+    proc sequence_40 {} { upvar 1 myparser myparser
         # x
         #     (Expr)
         #     *
@@ -263,38 +277,38 @@ oo::class create isbl-parser {
         #             ','
         #             (Expr)
     
-        my si:value_state_push
-        my sym_Expr
-        my si:valuevalue_part
-        my kleene_38
-        my si:value_state_merge
+        $myparser si:value_state_push
+        sym_Expr
+        $myparser si:valuevalue_part
+        kleene_38
+        $myparser si:value_state_merge
         return
     }
     
-    method kleene_38 {} {
+    proc kleene_38 {} { upvar 1 myparser myparser
         # *
         #     x
         #         ','
         #         (Expr)
     
         while {1} {
-            my si:void2_state_push
-        my sequence_36
-            my si:kleene_close
+            $myparser si:void2_state_push
+        sequence_36
+            $myparser si:kleene_close
         }
         return
     }
     
-    method sequence_36 {} {
+    proc sequence_36 {} { upvar 1 myparser myparser
         # x
         #     ','
         #     (Expr)
     
-        my si:void_state_push
-        my si:next_char ,
-        my si:voidvalue_part
-        my sym_Expr
-        my si:value_state_merge
+        $myparser si:void_state_push
+        $myparser si:next_char ,
+        $myparser si:voidvalue_part
+        sym_Expr
+        $myparser si:value_state_merge
         return
     }
     
@@ -302,7 +316,7 @@ oo::class create isbl-parser {
     # value Symbol 'Assign'
     #
     
-    method sym_Assign {} {
+    proc sym_Assign {} { upvar 1 myparser myparser
         # /
         #     x
         #         (Table)
@@ -321,13 +335,13 @@ oo::class create isbl-parser {
         #         (WS)
         #         (RelExpr)
     
-        my si:value_symbol_start Assign
-        my choice_61
-        my si:reduce_symbol_end Assign
+        $myparser si:value_symbol_start Assign
+        choice_61
+        $myparser si:reduce_symbol_end Assign
         return
     }
     
-    method choice_61 {} {
+    proc choice_61 {} { upvar 1 myparser myparser
         # /
         #     x
         #         (Table)
@@ -346,15 +360,15 @@ oo::class create isbl-parser {
         #         (WS)
         #         (RelExpr)
     
-        my si:value_state_push
-        my sequence_52
-        my si:valuevalue_branch
-        my sequence_59
-        my si:value_state_merge
+        $myparser si:value_state_push
+        sequence_52
+        $myparser si:valuevalue_branch
+        sequence_59
+        $myparser si:value_state_merge
         return
     }
     
-    method sequence_52 {} {
+    proc sequence_52 {} { upvar 1 myparser myparser
         # x
         #     (Table)
         #     (WS)
@@ -366,29 +380,29 @@ oo::class create isbl-parser {
         #     (WS)
         #     (RelExpr)
     
-        my si:value_state_push
-        my sym_Table
-        my si:valuevalue_part
-        my sym_WS
-        my si:valuevalue_part
-        my si:next_str +=
-        my si:valuevalue_part
-        my sym_WS
-        my si:valuevalue_part
-        my sym_Cols
-        my si:valuevalue_part
-        my sym_WS
-        my si:valuevalue_part
-        my si:next_char ?
-        my si:valuevalue_part
-        my sym_WS
-        my si:valuevalue_part
-        my sym_RelExpr
-        my si:value_state_merge
+        $myparser si:value_state_push
+        sym_Table
+        $myparser si:valuevalue_part
+        sym_WS
+        $myparser si:valuevalue_part
+        $myparser si:next_str +=
+        $myparser si:valuevalue_part
+        sym_WS
+        $myparser si:valuevalue_part
+        sym_Cols
+        $myparser si:valuevalue_part
+        sym_WS
+        $myparser si:valuevalue_part
+        $myparser si:next_char ?
+        $myparser si:valuevalue_part
+        sym_WS
+        $myparser si:valuevalue_part
+        sym_RelExpr
+        $myparser si:value_state_merge
         return
     }
     
-    method sequence_59 {} {
+    proc sequence_59 {} { upvar 1 myparser myparser
         # x
         #     (Table)
         #     (WS)
@@ -396,17 +410,17 @@ oo::class create isbl-parser {
         #     (WS)
         #     (RelExpr)
     
-        my si:value_state_push
-        my sym_Table
-        my si:valuevalue_part
-        my sym_WS
-        my si:valuevalue_part
-        my sym_AssOp
-        my si:valuevalue_part
-        my sym_WS
-        my si:valuevalue_part
-        my sym_RelExpr
-        my si:value_state_merge
+        $myparser si:value_state_push
+        sym_Table
+        $myparser si:valuevalue_part
+        sym_WS
+        $myparser si:valuevalue_part
+        sym_AssOp
+        $myparser si:valuevalue_part
+        sym_WS
+        $myparser si:valuevalue_part
+        sym_RelExpr
+        $myparser si:value_state_merge
         return
     }
     
@@ -414,35 +428,35 @@ oo::class create isbl-parser {
     # value Symbol 'AssOp'
     #
     
-    method sym_AssOp {} {
+    proc sym_AssOp {} { upvar 1 myparser myparser
         # /
         #     '='
         #     "+="
         #     "-="
         #     ":="
     
-        my si:void_symbol_start AssOp
-        my choice_68
-        my si:void_leaf_symbol_end AssOp
+        $myparser si:void_symbol_start AssOp
+        choice_68
+        $myparser si:void_leaf_symbol_end AssOp
         return
     }
     
-    method choice_68 {} {
+    proc choice_68 {} { upvar 1 myparser myparser
         # /
         #     '='
         #     "+="
         #     "-="
         #     ":="
     
-        my si:void_state_push
-        my si:next_char =
-        my si:voidvoid_branch
-        my si:next_str +=
-        my si:voidvoid_branch
-        my si:next_str -=
-        my si:voidvoid_branch
-        my si:next_str :=
-        my si:void_state_merge
+        $myparser si:void_state_push
+        $myparser si:next_char =
+        $myparser si:voidvoid_branch
+        $myparser si:next_str +=
+        $myparser si:voidvoid_branch
+        $myparser si:next_str -=
+        $myparser si:voidvoid_branch
+        $myparser si:next_str :=
+        $myparser si:void_state_merge
         return
     }
     
@@ -450,7 +464,7 @@ oo::class create isbl-parser {
     # value Symbol 'BitExpr'
     #
     
-    method sym_BitExpr {} {
+    proc sym_BitExpr {} { upvar 1 myparser myparser
         # x
         #     (AddExpr)
         #     (WS)
@@ -460,13 +474,13 @@ oo::class create isbl-parser {
         #             (WS)
         #             (AddExpr)
     
-        my si:value_symbol_start BitExpr
-        my sequence_80
-        my si:reduce_symbol_end BitExpr
+        $myparser si:value_symbol_start BitExpr
+        sequence_80
+        $myparser si:reduce_symbol_end BitExpr
         return
     }
     
-    method sequence_80 {} {
+    proc sequence_80 {} { upvar 1 myparser myparser
         # x
         #     (AddExpr)
         #     (WS)
@@ -476,17 +490,17 @@ oo::class create isbl-parser {
         #             (WS)
         #             (AddExpr)
     
-        my si:value_state_push
-        my sym_AddExpr
-        my si:valuevalue_part
-        my sym_WS
-        my si:valuevalue_part
-        my kleene_78
-        my si:value_state_merge
+        $myparser si:value_state_push
+        sym_AddExpr
+        $myparser si:valuevalue_part
+        sym_WS
+        $myparser si:valuevalue_part
+        kleene_78
+        $myparser si:value_state_merge
         return
     }
     
-    method kleene_78 {} {
+    proc kleene_78 {} { upvar 1 myparser myparser
         # *
         #     x
         #         (BitOp)
@@ -494,26 +508,26 @@ oo::class create isbl-parser {
         #         (AddExpr)
     
         while {1} {
-            my si:void2_state_push
-        my sequence_76
-            my si:kleene_close
+            $myparser si:void2_state_push
+        sequence_76
+            $myparser si:kleene_close
         }
         return
     }
     
-    method sequence_76 {} {
+    proc sequence_76 {} { upvar 1 myparser myparser
         # x
         #     (BitOp)
         #     (WS)
         #     (AddExpr)
     
-        my si:value_state_push
-        my sym_BitOp
-        my si:valuevalue_part
-        my sym_WS
-        my si:valuevalue_part
-        my sym_AddExpr
-        my si:value_state_merge
+        $myparser si:value_state_push
+        sym_BitOp
+        $myparser si:valuevalue_part
+        sym_WS
+        $myparser si:valuevalue_part
+        sym_AddExpr
+        $myparser si:value_state_merge
         return
     }
     
@@ -521,31 +535,31 @@ oo::class create isbl-parser {
     # value Symbol 'BitOp'
     #
     
-    method sym_BitOp {} {
+    proc sym_BitOp {} { upvar 1 myparser myparser
         # /
         #     "<<"
         #     ">>"
         #     [&|]
     
-        my si:void_symbol_start BitOp
-        my choice_86
-        my si:void_leaf_symbol_end BitOp
+        $myparser si:void_symbol_start BitOp
+        choice_86
+        $myparser si:void_leaf_symbol_end BitOp
         return
     }
     
-    method choice_86 {} {
+    proc choice_86 {} { upvar 1 myparser myparser
         # /
         #     "<<"
         #     ">>"
         #     [&|]
     
-        my si:void_state_push
-        my si:next_str <<
-        my si:voidvoid_branch
-        my si:next_str >>
-        my si:voidvoid_branch
-        my si:next_class &|
-        my si:void_state_merge
+        $myparser si:void_state_push
+        $myparser si:next_str <<
+        $myparser si:voidvoid_branch
+        $myparser si:next_str >>
+        $myparser si:voidvoid_branch
+        $myparser si:next_class &|
+        $myparser si:void_state_merge
         return
     }
     
@@ -553,12 +567,12 @@ oo::class create isbl-parser {
     # leaf Symbol 'CAll'
     #
     
-    method sym_CAll {} {
+    proc sym_CAll {} { upvar 1 myparser myparser
         # '*'
     
-        my si:void_symbol_start CAll
-        my si:next_char *
-        my si:void_leaf_symbol_end CAll
+        $myparser si:void_symbol_start CAll
+        $myparser si:next_char *
+        $myparser si:void_leaf_symbol_end CAll
         return
     }
     
@@ -566,12 +580,12 @@ oo::class create isbl-parser {
     # leaf Symbol 'CDel'
     #
     
-    method sym_CDel {} {
+    proc sym_CDel {} { upvar 1 myparser myparser
         # (Ident)
     
-        my si:value_symbol_start CDel
-        my sym_Ident
-        my si:value_leaf_symbol_end CDel
+        $myparser si:value_symbol_start CDel
+        sym_Ident
+        $myparser si:value_leaf_symbol_end CDel
         return
     }
     
@@ -579,7 +593,7 @@ oo::class create isbl-parser {
     # value Symbol 'CEqu'
     #
     
-    method sym_CEqu {} {
+    proc sym_CEqu {} { upvar 1 myparser myparser
         # x
         #     (Column)
         #     (WS)
@@ -587,13 +601,13 @@ oo::class create isbl-parser {
         #     (WS)
         #     (Expr)
     
-        my si:value_symbol_start CEqu
-        my sequence_98
-        my si:reduce_symbol_end CEqu
+        $myparser si:value_symbol_start CEqu
+        sequence_98
+        $myparser si:reduce_symbol_end CEqu
         return
     }
     
-    method sequence_98 {} {
+    proc sequence_98 {} { upvar 1 myparser myparser
         # x
         #     (Column)
         #     (WS)
@@ -601,17 +615,17 @@ oo::class create isbl-parser {
         #     (WS)
         #     (Expr)
     
-        my si:value_state_push
-        my sym_Column
-        my si:valuevalue_part
-        my sym_WS
-        my si:valuevalue_part
-        my si:next_char =
-        my si:valuevalue_part
-        my sym_WS
-        my si:valuevalue_part
-        my sym_Expr
-        my si:value_state_merge
+        $myparser si:value_state_push
+        sym_Column
+        $myparser si:valuevalue_part
+        sym_WS
+        $myparser si:valuevalue_part
+        $myparser si:next_char =
+        $myparser si:valuevalue_part
+        sym_WS
+        $myparser si:valuevalue_part
+        sym_Expr
+        $myparser si:value_state_merge
         return
     }
     
@@ -619,7 +633,7 @@ oo::class create isbl-parser {
     # value Symbol 'CFunc'
     #
     
-    method sym_CFunc {} {
+    proc sym_CFunc {} { upvar 1 myparser myparser
         # x
         #     (Name)
         #     (WS)
@@ -635,13 +649,13 @@ oo::class create isbl-parser {
         #     '\)'
         #     (WS)
     
-        my si:value_symbol_start CFunc
-        my sequence_115
-        my si:reduce_symbol_end CFunc
+        $myparser si:value_symbol_start CFunc
+        sequence_115
+        $myparser si:reduce_symbol_end CFunc
         return
     }
     
-    method sequence_115 {} {
+    proc sequence_115 {} { upvar 1 myparser myparser
         # x
         #     (Name)
         #     (WS)
@@ -657,41 +671,41 @@ oo::class create isbl-parser {
         #     '\)'
         #     (WS)
     
-        my si:value_state_push
-        my sym_Name
-        my si:valuevalue_part
-        my sym_WS
-        my si:valuevalue_part
-        my si:next_char \50
-        my si:valuevalue_part
-        my sym_WS
-        my si:valuevalue_part
-        my optional_106
-        my si:valuevalue_part
-        my sym_WS
-        my si:valuevalue_part
-        my si:next_char |
-        my si:valuevalue_part
-        my sym_WS
-        my si:valuevalue_part
-        my sym_OutArgs
-        my si:valuevalue_part
-        my sym_WS
-        my si:valuevalue_part
-        my si:next_char \51
-        my si:valuevalue_part
-        my sym_WS
-        my si:value_state_merge
+        $myparser si:value_state_push
+        sym_Name
+        $myparser si:valuevalue_part
+        sym_WS
+        $myparser si:valuevalue_part
+        $myparser si:next_char \50
+        $myparser si:valuevalue_part
+        sym_WS
+        $myparser si:valuevalue_part
+        optional_106
+        $myparser si:valuevalue_part
+        sym_WS
+        $myparser si:valuevalue_part
+        $myparser si:next_char |
+        $myparser si:valuevalue_part
+        sym_WS
+        $myparser si:valuevalue_part
+        sym_OutArgs
+        $myparser si:valuevalue_part
+        sym_WS
+        $myparser si:valuevalue_part
+        $myparser si:next_char \51
+        $myparser si:valuevalue_part
+        sym_WS
+        $myparser si:value_state_merge
         return
     }
     
-    method optional_106 {} {
+    proc optional_106 {} { upvar 1 myparser myparser
         # ?
         #     (InArgs)
     
-        my si:void2_state_push
-        my sym_InArgs
-        my si:void_state_merge_ok
+        $myparser si:void2_state_push
+        sym_InArgs
+        $myparser si:void_state_merge_ok
         return
     }
     
@@ -699,7 +713,7 @@ oo::class create isbl-parser {
     # value Symbol 'CMap'
     #
     
-    method sym_CMap {} {
+    proc sym_CMap {} { upvar 1 myparser myparser
         # x
         #     (Expr)
         #     (WS)
@@ -707,13 +721,13 @@ oo::class create isbl-parser {
         #     (WS)
         #     (Column)
     
-        my si:value_symbol_start CMap
-        my sequence_123
-        my si:reduce_symbol_end CMap
+        $myparser si:value_symbol_start CMap
+        sequence_123
+        $myparser si:reduce_symbol_end CMap
         return
     }
     
-    method sequence_123 {} {
+    proc sequence_123 {} { upvar 1 myparser myparser
         # x
         #     (Expr)
         #     (WS)
@@ -721,17 +735,17 @@ oo::class create isbl-parser {
         #     (WS)
         #     (Column)
     
-        my si:value_state_push
-        my sym_Expr
-        my si:valuevalue_part
-        my sym_WS
-        my si:valuevalue_part
-        my sym_MapOp
-        my si:valuevalue_part
-        my sym_WS
-        my si:valuevalue_part
-        my sym_Column
-        my si:value_state_merge
+        $myparser si:value_state_push
+        sym_Expr
+        $myparser si:valuevalue_part
+        sym_WS
+        $myparser si:valuevalue_part
+        sym_MapOp
+        $myparser si:valuevalue_part
+        sym_WS
+        $myparser si:valuevalue_part
+        sym_Column
+        $myparser si:value_state_merge
         return
     }
     
@@ -739,7 +753,7 @@ oo::class create isbl-parser {
     # value Symbol 'CmpExpr'
     #
     
-    method sym_CmpExpr {} {
+    proc sym_CmpExpr {} { upvar 1 myparser myparser
         # x
         #     (BitExpr)
         #     (WS)
@@ -749,13 +763,13 @@ oo::class create isbl-parser {
         #             (WS)
         #             (BitExpr)
     
-        my si:value_symbol_start CmpExpr
-        my sequence_135
-        my si:reduce_symbol_end CmpExpr
+        $myparser si:value_symbol_start CmpExpr
+        sequence_135
+        $myparser si:reduce_symbol_end CmpExpr
         return
     }
     
-    method sequence_135 {} {
+    proc sequence_135 {} { upvar 1 myparser myparser
         # x
         #     (BitExpr)
         #     (WS)
@@ -765,17 +779,17 @@ oo::class create isbl-parser {
         #             (WS)
         #             (BitExpr)
     
-        my si:value_state_push
-        my sym_BitExpr
-        my si:valuevalue_part
-        my sym_WS
-        my si:valuevalue_part
-        my kleene_133
-        my si:value_state_merge
+        $myparser si:value_state_push
+        sym_BitExpr
+        $myparser si:valuevalue_part
+        sym_WS
+        $myparser si:valuevalue_part
+        kleene_133
+        $myparser si:value_state_merge
         return
     }
     
-    method kleene_133 {} {
+    proc kleene_133 {} { upvar 1 myparser myparser
         # *
         #     x
         #         (CmpOp)
@@ -783,26 +797,26 @@ oo::class create isbl-parser {
         #         (BitExpr)
     
         while {1} {
-            my si:void2_state_push
-        my sequence_131
-            my si:kleene_close
+            $myparser si:void2_state_push
+        sequence_131
+            $myparser si:kleene_close
         }
         return
     }
     
-    method sequence_131 {} {
+    proc sequence_131 {} { upvar 1 myparser myparser
         # x
         #     (CmpOp)
         #     (WS)
         #     (BitExpr)
     
-        my si:value_state_push
-        my sym_CmpOp
-        my si:valuevalue_part
-        my sym_WS
-        my si:valuevalue_part
-        my sym_BitExpr
-        my si:value_state_merge
+        $myparser si:value_state_push
+        sym_CmpOp
+        $myparser si:valuevalue_part
+        sym_WS
+        $myparser si:valuevalue_part
+        sym_BitExpr
+        $myparser si:value_state_merge
         return
     }
     
@@ -810,7 +824,7 @@ oo::class create isbl-parser {
     # value Symbol 'CmpOp'
     #
     
-    method sym_CmpOp {} {
+    proc sym_CmpOp {} { upvar 1 myparser myparser
         # /
         #     '<'
         #     "<="
@@ -830,13 +844,13 @@ oo::class create isbl-parser {
         #     "match"
         #     "regexp"
     
-        my si:void_symbol_start CmpOp
-        my choice_155
-        my si:void_leaf_symbol_end CmpOp
+        $myparser si:void_symbol_start CmpOp
+        choice_155
+        $myparser si:void_leaf_symbol_end CmpOp
         return
     }
     
-    method choice_155 {} {
+    proc choice_155 {} { upvar 1 myparser myparser
         # /
         #     '<'
         #     "<="
@@ -856,41 +870,41 @@ oo::class create isbl-parser {
         #     "match"
         #     "regexp"
     
-        my si:void_state_push
-        my si:next_char <
-        my si:voidvoid_branch
-        my si:next_str <=
-        my si:voidvoid_branch
-        my si:next_char >
-        my si:voidvoid_branch
-        my si:next_str >==
-        my si:voidvoid_branch
-        my si:next_str ==
-        my si:voidvoid_branch
-        my si:next_str !=
-        my si:voidvoid_branch
-        my si:next_str <>IS
-        my si:voidvoid_branch
-        my si:next_str IS\40NOT
-        my si:voidvoid_branch
-        my si:next_str IN
-        my si:voidvoid_branch
-        my si:next_str LIKEis
-        my si:voidvoid_branch
-        my si:next_str is\40not
-        my si:voidvoid_branch
-        my si:next_str in
-        my si:voidvoid_branch
-        my si:next_str likeGLOB
-        my si:voidvoid_branch
-        my si:next_str MATCH
-        my si:voidvoid_branch
-        my si:next_str REGEXPglob
-        my si:voidvoid_branch
-        my si:next_str match
-        my si:voidvoid_branch
-        my si:next_str regexp
-        my si:void_state_merge
+        $myparser si:void_state_push
+        $myparser si:next_char <
+        $myparser si:voidvoid_branch
+        $myparser si:next_str <=
+        $myparser si:voidvoid_branch
+        $myparser si:next_char >
+        $myparser si:voidvoid_branch
+        $myparser si:next_str >==
+        $myparser si:voidvoid_branch
+        $myparser si:next_str ==
+        $myparser si:voidvoid_branch
+        $myparser si:next_str !=
+        $myparser si:voidvoid_branch
+        $myparser si:next_str <>IS
+        $myparser si:voidvoid_branch
+        $myparser si:next_str IS\40NOT
+        $myparser si:voidvoid_branch
+        $myparser si:next_str IN
+        $myparser si:voidvoid_branch
+        $myparser si:next_str LIKEis
+        $myparser si:voidvoid_branch
+        $myparser si:next_str is\40not
+        $myparser si:voidvoid_branch
+        $myparser si:next_str in
+        $myparser si:voidvoid_branch
+        $myparser si:next_str likeGLOB
+        $myparser si:voidvoid_branch
+        $myparser si:next_str MATCH
+        $myparser si:voidvoid_branch
+        $myparser si:next_str REGEXPglob
+        $myparser si:voidvoid_branch
+        $myparser si:next_str match
+        $myparser si:voidvoid_branch
+        $myparser si:next_str regexp
+        $myparser si:void_state_merge
         return
     }
     
@@ -898,12 +912,12 @@ oo::class create isbl-parser {
     # leaf Symbol 'CName'
     #
     
-    method sym_CName {} {
+    proc sym_CName {} { upvar 1 myparser myparser
         # (Ident)
     
-        my si:value_symbol_start CName
-        my sym_Ident
-        my si:value_leaf_symbol_end CName
+        $myparser si:value_symbol_start CName
+        sym_Ident
+        $myparser si:value_leaf_symbol_end CName
         return
     }
     
@@ -911,7 +925,7 @@ oo::class create isbl-parser {
     # value Symbol 'Col'
     #
     
-    method sym_Col {} {
+    proc sym_Col {} { upvar 1 myparser myparser
         # /
         #     (CFunc)
         #     (CMap)
@@ -923,13 +937,13 @@ oo::class create isbl-parser {
         #     (CName)
         #     (CAll)
     
-        my si:value_symbol_start Col
-        my choice_170
-        my si:reduce_symbol_end Col
+        $myparser si:value_symbol_start Col
+        choice_170
+        $myparser si:reduce_symbol_end Col
         return
     }
     
-    method choice_170 {} {
+    proc choice_170 {} { upvar 1 myparser myparser
         # /
         #     (CFunc)
         #     (CMap)
@@ -941,35 +955,35 @@ oo::class create isbl-parser {
         #     (CName)
         #     (CAll)
     
-        my si:value_state_push
-        my sym_CFunc
-        my si:valuevalue_branch
-        my sym_CMap
-        my si:valuevalue_branch
-        my sym_CEqu
-        my si:valuevalue_branch
-        my sequence_166
-        my si:valuevalue_branch
-        my sym_CName
-        my si:valuevalue_branch
-        my sym_CAll
-        my si:value_state_merge
+        $myparser si:value_state_push
+        sym_CFunc
+        $myparser si:valuevalue_branch
+        sym_CMap
+        $myparser si:valuevalue_branch
+        sym_CEqu
+        $myparser si:valuevalue_branch
+        sequence_166
+        $myparser si:valuevalue_branch
+        sym_CName
+        $myparser si:valuevalue_branch
+        sym_CAll
+        $myparser si:value_state_merge
         return
     }
     
-    method sequence_166 {} {
+    proc sequence_166 {} { upvar 1 myparser myparser
         # x
         #     '!'
         #     (WS)
         #     (CDel)
     
-        my si:void_state_push
-        my si:next_char !
-        my si:voidvoid_part
-        my sym_WS
-        my si:voidvalue_part
-        my sym_CDel
-        my si:value_state_merge
+        $myparser si:void_state_push
+        $myparser si:next_char !
+        $myparser si:voidvoid_part
+        sym_WS
+        $myparser si:voidvalue_part
+        sym_CDel
+        $myparser si:value_state_merge
         return
     }
     
@@ -977,7 +991,7 @@ oo::class create isbl-parser {
     # value Symbol 'Cols'
     #
     
-    method sym_Cols {} {
+    proc sym_Cols {} { upvar 1 myparser myparser
         # x
         #     (Col)
         #     *
@@ -988,13 +1002,13 @@ oo::class create isbl-parser {
         #             (WS)
         #             (Col)
     
-        my si:value_symbol_start Cols
-        my sequence_184
-        my si:reduce_symbol_end Cols
+        $myparser si:value_symbol_start Cols
+        sequence_184
+        $myparser si:reduce_symbol_end Cols
         return
     }
     
-    method sequence_184 {} {
+    proc sequence_184 {} { upvar 1 myparser myparser
         # x
         #     (Col)
         #     *
@@ -1005,15 +1019,15 @@ oo::class create isbl-parser {
         #             (WS)
         #             (Col)
     
-        my si:value_state_push
-        my sym_Col
-        my si:valuevalue_part
-        my kleene_182
-        my si:value_state_merge
+        $myparser si:value_state_push
+        sym_Col
+        $myparser si:valuevalue_part
+        kleene_182
+        $myparser si:value_state_merge
         return
     }
     
-    method kleene_182 {} {
+    proc kleene_182 {} { upvar 1 myparser myparser
         # *
         #     x
         #         (WS)
@@ -1023,14 +1037,14 @@ oo::class create isbl-parser {
         #         (Col)
     
         while {1} {
-            my si:void2_state_push
-        my sequence_180
-            my si:kleene_close
+            $myparser si:void2_state_push
+        sequence_180
+            $myparser si:kleene_close
         }
         return
     }
     
-    method sequence_180 {} {
+    proc sequence_180 {} { upvar 1 myparser myparser
         # x
         #     (WS)
         #     ?
@@ -1038,25 +1052,25 @@ oo::class create isbl-parser {
         #     (WS)
         #     (Col)
     
-        my si:void_state_push
-        my sym_WS
-        my si:voidvoid_part
-        my optional_176
-        my si:voidvoid_part
-        my sym_WS
-        my si:voidvalue_part
-        my sym_Col
-        my si:value_state_merge
+        $myparser si:void_state_push
+        sym_WS
+        $myparser si:voidvoid_part
+        optional_176
+        $myparser si:voidvoid_part
+        sym_WS
+        $myparser si:voidvalue_part
+        sym_Col
+        $myparser si:value_state_merge
         return
     }
     
-    method optional_176 {} {
+    proc optional_176 {} { upvar 1 myparser myparser
         # ?
         #     ','
     
-        my si:void2_state_push
-        my si:next_char ,
-        my si:void_state_merge_ok
+        $myparser si:void2_state_push
+        $myparser si:next_char ,
+        $myparser si:void_state_merge_ok
         return
     }
     
@@ -1064,12 +1078,12 @@ oo::class create isbl-parser {
     # leaf Symbol 'Column'
     #
     
-    method sym_Column {} {
+    proc sym_Column {} { upvar 1 myparser myparser
         # (Ident)
     
-        my si:value_symbol_start Column
-        my sym_Ident
-        my si:value_leaf_symbol_end Column
+        $myparser si:value_symbol_start Column
+        sym_Ident
+        $myparser si:value_leaf_symbol_end Column
         return
     }
     
@@ -1077,12 +1091,12 @@ oo::class create isbl-parser {
     # value Symbol 'Comma'
     #
     
-    method sym_Comma {} {
+    proc sym_Comma {} { upvar 1 myparser myparser
         # ','
     
-        my si:void_symbol_start Comma
-        my si:next_char ,
-        my si:void_leaf_symbol_end Comma
+        $myparser si:void_symbol_start Comma
+        $myparser si:next_char ,
+        $myparser si:void_leaf_symbol_end Comma
         return
     }
     
@@ -1090,23 +1104,23 @@ oo::class create isbl-parser {
     # value Symbol 'EOF'
     #
     
-    method sym_EOF {} {
+    proc sym_EOF {} { upvar 1 myparser myparser
         # !
         #     <dot>
     
-        my si:void_symbol_start EOF
-        my notahead_192
-        my si:void_leaf_symbol_end EOF
+        $myparser si:void_symbol_start EOF
+        notahead_192
+        $myparser si:void_leaf_symbol_end EOF
         return
     }
     
-    method notahead_192 {} {
+    proc notahead_192 {} { upvar 1 myparser myparser
         # !
         #     <dot>
     
-        my i_loc_push
-        my i_input_next dot
-        my si:void_notahead_exit
+        $myparser i_loc_push
+        $myparser i_input_next dot
+        $myparser si:void_notahead_exit
         return
     }
     
@@ -1114,12 +1128,12 @@ oo::class create isbl-parser {
     # value Symbol 'Equ'
     #
     
-    method sym_Equ {} {
+    proc sym_Equ {} { upvar 1 myparser myparser
         # '='
     
-        my si:void_symbol_start Equ
-        my si:next_char =
-        my si:void_leaf_symbol_end Equ
+        $myparser si:void_symbol_start Equ
+        $myparser si:next_char =
+        $myparser si:void_leaf_symbol_end Equ
         return
     }
     
@@ -1127,12 +1141,12 @@ oo::class create isbl-parser {
     # value Symbol 'Expr'
     #
     
-    method sym_Expr {} {
+    proc sym_Expr {} { upvar 1 myparser myparser
         # (OrExpr)
     
-        my si:value_symbol_start Expr
-        my sym_OrExpr
-        my si:reduce_symbol_end Expr
+        $myparser si:value_symbol_start Expr
+        sym_OrExpr
+        $myparser si:reduce_symbol_end Expr
         return
     }
     
@@ -1140,40 +1154,40 @@ oo::class create isbl-parser {
     # value Symbol 'Frac'
     #
     
-    method sym_Frac {} {
+    proc sym_Frac {} { upvar 1 myparser myparser
         # x
         #     '.'
         #     *
         #         <ddigit>
     
-        my si:void_symbol_start Frac
-        my sequence_203
-        my si:void_leaf_symbol_end Frac
+        $myparser si:void_symbol_start Frac
+        sequence_203
+        $myparser si:void_leaf_symbol_end Frac
         return
     }
     
-    method sequence_203 {} {
+    proc sequence_203 {} { upvar 1 myparser myparser
         # x
         #     '.'
         #     *
         #         <ddigit>
     
-        my si:void_state_push
-        my si:next_char .
-        my si:voidvoid_part
-        my kleene_201
-        my si:void_state_merge
+        $myparser si:void_state_push
+        $myparser si:next_char .
+        $myparser si:voidvoid_part
+        kleene_201
+        $myparser si:void_state_merge
         return
     }
     
-    method kleene_201 {} {
+    proc kleene_201 {} { upvar 1 myparser myparser
         # *
         #     <ddigit>
     
         while {1} {
-            my si:void2_state_push
-        my si:next_ddigit
-            my si:kleene_close
+            $myparser si:void2_state_push
+        $myparser si:next_ddigit
+            $myparser si:kleene_close
         }
         return
     }
@@ -1182,7 +1196,7 @@ oo::class create isbl-parser {
     # leaf Symbol 'Func'
     #
     
-    method sym_Func {} {
+    proc sym_Func {} { upvar 1 myparser myparser
         # x
         #     (Name)
         #     (RP)
@@ -1190,13 +1204,13 @@ oo::class create isbl-parser {
         #         (Args)
         #     (LP)
     
-        my si:value_symbol_start Func
-        my sequence_212
-        my si:value_leaf_symbol_end Func
+        $myparser si:value_symbol_start Func
+        sequence_212
+        $myparser si:value_leaf_symbol_end Func
         return
     }
     
-    method sequence_212 {} {
+    proc sequence_212 {} { upvar 1 myparser myparser
         # x
         #     (Name)
         #     (RP)
@@ -1204,25 +1218,25 @@ oo::class create isbl-parser {
         #         (Args)
         #     (LP)
     
-        my si:value_state_push
-        my sym_Name
-        my si:valuevalue_part
-        my sym_RP
-        my si:valuevalue_part
-        my optional_209
-        my si:valuevalue_part
-        my sym_LP
-        my si:value_state_merge
+        $myparser si:value_state_push
+        sym_Name
+        $myparser si:valuevalue_part
+        sym_RP
+        $myparser si:valuevalue_part
+        optional_209
+        $myparser si:valuevalue_part
+        sym_LP
+        $myparser si:value_state_merge
         return
     }
     
-    method optional_209 {} {
+    proc optional_209 {} { upvar 1 myparser myparser
         # ?
         #     (Args)
     
-        my si:void2_state_push
-        my sym_Args
-        my si:void_state_merge_ok
+        $myparser si:void2_state_push
+        sym_Args
+        $myparser si:void_state_merge_ok
         return
     }
     
@@ -1230,40 +1244,40 @@ oo::class create isbl-parser {
     # value Symbol 'Ident'
     #
     
-    method sym_Ident {} {
+    proc sym_Ident {} { upvar 1 myparser myparser
         # x
         #     <alpha>
         #     *
         #         [_A Za z0 9]
     
-        my si:void_symbol_start Ident
-        my sequence_219
-        my si:void_leaf_symbol_end Ident
+        $myparser si:void_symbol_start Ident
+        sequence_219
+        $myparser si:void_leaf_symbol_end Ident
         return
     }
     
-    method sequence_219 {} {
+    proc sequence_219 {} { upvar 1 myparser myparser
         # x
         #     <alpha>
         #     *
         #         [_A Za z0 9]
     
-        my si:void_state_push
-        my si:next_alpha
-        my si:voidvoid_part
-        my kleene_217
-        my si:void_state_merge
+        $myparser si:void_state_push
+        $myparser si:next_alpha
+        $myparser si:voidvoid_part
+        kleene_217
+        $myparser si:void_state_merge
         return
     }
     
-    method kleene_217 {} {
+    proc kleene_217 {} { upvar 1 myparser myparser
         # *
         #     [_A Za z0 9]
     
         while {1} {
-            my si:void2_state_push
-        my si:next_class _ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789
-            my si:kleene_close
+            $myparser si:void2_state_push
+        $myparser si:next_class _ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789
+            $myparser si:kleene_close
         }
         return
     }
@@ -1272,7 +1286,7 @@ oo::class create isbl-parser {
     # leaf Symbol 'InArgs'
     #
     
-    method sym_InArgs {} {
+    proc sym_InArgs {} { upvar 1 myparser myparser
         # ?
         #     x
         #         (Value)
@@ -1283,13 +1297,13 @@ oo::class create isbl-parser {
         #                 (WS)
         #                 (Value)
     
-        my si:value_symbol_start InArgs
-        my optional_233
-        my si:value_leaf_symbol_end InArgs
+        $myparser si:value_symbol_start InArgs
+        optional_233
+        $myparser si:value_leaf_symbol_end InArgs
         return
     }
     
-    method optional_233 {} {
+    proc optional_233 {} { upvar 1 myparser myparser
         # ?
         #     x
         #         (Value)
@@ -1300,13 +1314,13 @@ oo::class create isbl-parser {
         #                 (WS)
         #                 (Value)
     
-        my si:void2_state_push
-        my sequence_231
-        my si:void_state_merge_ok
+        $myparser si:void2_state_push
+        sequence_231
+        $myparser si:void_state_merge_ok
         return
     }
     
-    method sequence_231 {} {
+    proc sequence_231 {} { upvar 1 myparser myparser
         # x
         #     (Value)
         #     (WS)
@@ -1316,17 +1330,17 @@ oo::class create isbl-parser {
         #             (WS)
         #             (Value)
     
-        my si:value_state_push
-        my sym_Value
-        my si:valuevalue_part
-        my sym_WS
-        my si:valuevalue_part
-        my kleene_229
-        my si:value_state_merge
+        $myparser si:value_state_push
+        sym_Value
+        $myparser si:valuevalue_part
+        sym_WS
+        $myparser si:valuevalue_part
+        kleene_229
+        $myparser si:value_state_merge
         return
     }
     
-    method kleene_229 {} {
+    proc kleene_229 {} { upvar 1 myparser myparser
         # *
         #     x
         #         ','
@@ -1334,26 +1348,26 @@ oo::class create isbl-parser {
         #         (Value)
     
         while {1} {
-            my si:void2_state_push
-        my sequence_227
-            my si:kleene_close
+            $myparser si:void2_state_push
+        sequence_227
+            $myparser si:kleene_close
         }
         return
     }
     
-    method sequence_227 {} {
+    proc sequence_227 {} { upvar 1 myparser myparser
         # x
         #     ','
         #     (WS)
         #     (Value)
     
-        my si:void_state_push
-        my si:next_char ,
-        my si:voidvoid_part
-        my sym_WS
-        my si:voidvalue_part
-        my sym_Value
-        my si:value_state_merge
+        $myparser si:void_state_push
+        $myparser si:next_char ,
+        $myparser si:voidvoid_part
+        sym_WS
+        $myparser si:voidvalue_part
+        sym_Value
+        $myparser si:value_state_merge
         return
     }
     
@@ -1361,55 +1375,55 @@ oo::class create isbl-parser {
     # value Symbol 'Int'
     #
     
-    method sym_Int {} {
+    proc sym_Int {} { upvar 1 myparser myparser
         # x
         #     ?
         #         (Sign)
         #     +
         #         <ddigit>
     
-        my si:value_symbol_start Int
-        my sequence_242
-        my si:reduce_symbol_end Int
+        $myparser si:value_symbol_start Int
+        sequence_242
+        $myparser si:reduce_symbol_end Int
         return
     }
     
-    method sequence_242 {} {
+    proc sequence_242 {} { upvar 1 myparser myparser
         # x
         #     ?
         #         (Sign)
         #     +
         #         <ddigit>
     
-        my si:value_state_push
-        my optional_237
-        my si:valuevalue_part
-        my poskleene_240
-        my si:value_state_merge
+        $myparser si:value_state_push
+        optional_237
+        $myparser si:valuevalue_part
+        poskleene_240
+        $myparser si:value_state_merge
         return
     }
     
-    method optional_237 {} {
+    proc optional_237 {} { upvar 1 myparser myparser
         # ?
         #     (Sign)
     
-        my si:void2_state_push
-        my sym_Sign
-        my si:void_state_merge_ok
+        $myparser si:void2_state_push
+        sym_Sign
+        $myparser si:void_state_merge_ok
         return
     }
     
-    method poskleene_240 {} {
+    proc poskleene_240 {} { upvar 1 myparser myparser
         # +
         #     <ddigit>
     
-        my i_loc_push
-        my si:next_ddigit
-        my si:kleene_abort
+        $myparser i_loc_push
+        $myparser si:next_ddigit
+        $myparser si:kleene_abort
         while {1} {
-            my si:void2_state_push
-        my si:next_ddigit
-            my si:kleene_close
+            $myparser si:void2_state_push
+        $myparser si:next_ddigit
+            $myparser si:kleene_close
         }
         return
     }
@@ -1418,7 +1432,7 @@ oo::class create isbl-parser {
     # value Symbol 'Join'
     #
     
-    method sym_Join {} {
+    proc sym_Join {} { upvar 1 myparser myparser
         # x
         #     (Select)
         #     (WS)
@@ -1428,13 +1442,13 @@ oo::class create isbl-parser {
         #             (WS)
         #             (Select)
     
-        my si:value_symbol_start Join
-        my sequence_254
-        my si:reduce_symbol_end Join
+        $myparser si:value_symbol_start Join
+        sequence_254
+        $myparser si:reduce_symbol_end Join
         return
     }
     
-    method sequence_254 {} {
+    proc sequence_254 {} { upvar 1 myparser myparser
         # x
         #     (Select)
         #     (WS)
@@ -1444,17 +1458,17 @@ oo::class create isbl-parser {
         #             (WS)
         #             (Select)
     
-        my si:value_state_push
-        my sym_Select
-        my si:valuevalue_part
-        my sym_WS
-        my si:valuevalue_part
-        my kleene_252
-        my si:value_state_merge
+        $myparser si:value_state_push
+        sym_Select
+        $myparser si:valuevalue_part
+        sym_WS
+        $myparser si:valuevalue_part
+        kleene_252
+        $myparser si:value_state_merge
         return
     }
     
-    method kleene_252 {} {
+    proc kleene_252 {} { upvar 1 myparser myparser
         # *
         #     x
         #         (JoinOp)
@@ -1462,26 +1476,26 @@ oo::class create isbl-parser {
         #         (Select)
     
         while {1} {
-            my si:void2_state_push
-        my sequence_250
-            my si:kleene_close
+            $myparser si:void2_state_push
+        sequence_250
+            $myparser si:kleene_close
         }
         return
     }
     
-    method sequence_250 {} {
+    proc sequence_250 {} { upvar 1 myparser myparser
         # x
         #     (JoinOp)
         #     (WS)
         #     (Select)
     
-        my si:value_state_push
-        my sym_JoinOp
-        my si:valuevalue_part
-        my sym_WS
-        my si:valuevalue_part
-        my sym_Select
-        my si:value_state_merge
+        $myparser si:value_state_push
+        sym_JoinOp
+        $myparser si:valuevalue_part
+        sym_WS
+        $myparser si:valuevalue_part
+        sym_Select
+        $myparser si:value_state_merge
         return
     }
     
@@ -1489,12 +1503,12 @@ oo::class create isbl-parser {
     # value Symbol 'JoinOp'
     #
     
-    method sym_JoinOp {} {
+    proc sym_JoinOp {} { upvar 1 myparser myparser
         # [*/]
     
-        my si:void_symbol_start JoinOp
-        my si:next_class */
-        my si:void_leaf_symbol_end JoinOp
+        $myparser si:void_symbol_start JoinOp
+        $myparser si:next_class */
+        $myparser si:void_leaf_symbol_end JoinOp
         return
     }
     
@@ -1502,12 +1516,12 @@ oo::class create isbl-parser {
     # value Symbol 'LP'
     #
     
-    method sym_LP {} {
+    proc sym_LP {} { upvar 1 myparser myparser
         # '\)'
     
-        my si:void_symbol_start LP
-        my si:next_char \51
-        my si:void_leaf_symbol_end LP
+        $myparser si:void_symbol_start LP
+        $myparser si:next_char \51
+        $myparser si:void_leaf_symbol_end LP
         return
     }
     
@@ -1515,27 +1529,27 @@ oo::class create isbl-parser {
     # void Symbol 'MapOp'
     #
     
-    method sym_MapOp {} {
+    proc sym_MapOp {} { upvar 1 myparser myparser
         # /
         #     "->"
         #     "as"
     
-        my si:void_void_symbol_start MapOp
-        my choice_263
-        my si:void_clear_symbol_end MapOp
+        $myparser si:void_void_symbol_start MapOp
+        choice_263
+        $myparser si:void_clear_symbol_end MapOp
         return
     }
     
-    method choice_263 {} {
+    proc choice_263 {} { upvar 1 myparser myparser
         # /
         #     "->"
         #     "as"
     
-        my si:void_state_push
-        my si:next_str ->
-        my si:voidvoid_branch
-        my si:next_str as
-        my si:void_state_merge
+        $myparser si:void_state_push
+        $myparser si:next_str ->
+        $myparser si:voidvoid_branch
+        $myparser si:next_str as
+        $myparser si:void_state_merge
         return
     }
     
@@ -1543,7 +1557,7 @@ oo::class create isbl-parser {
     # value Symbol 'MulExpr'
     #
     
-    method sym_MulExpr {} {
+    proc sym_MulExpr {} { upvar 1 myparser myparser
         # x
         #     (StrExpr)
         #     (WS)
@@ -1553,13 +1567,13 @@ oo::class create isbl-parser {
         #             (WS)
         #             (StrExpr)
     
-        my si:value_symbol_start MulExpr
-        my sequence_275
-        my si:reduce_symbol_end MulExpr
+        $myparser si:value_symbol_start MulExpr
+        sequence_275
+        $myparser si:reduce_symbol_end MulExpr
         return
     }
     
-    method sequence_275 {} {
+    proc sequence_275 {} { upvar 1 myparser myparser
         # x
         #     (StrExpr)
         #     (WS)
@@ -1569,17 +1583,17 @@ oo::class create isbl-parser {
         #             (WS)
         #             (StrExpr)
     
-        my si:value_state_push
-        my sym_StrExpr
-        my si:valuevalue_part
-        my sym_WS
-        my si:valuevalue_part
-        my kleene_273
-        my si:value_state_merge
+        $myparser si:value_state_push
+        sym_StrExpr
+        $myparser si:valuevalue_part
+        sym_WS
+        $myparser si:valuevalue_part
+        kleene_273
+        $myparser si:value_state_merge
         return
     }
     
-    method kleene_273 {} {
+    proc kleene_273 {} { upvar 1 myparser myparser
         # *
         #     x
         #         (MulOp)
@@ -1587,26 +1601,26 @@ oo::class create isbl-parser {
         #         (StrExpr)
     
         while {1} {
-            my si:void2_state_push
-        my sequence_271
-            my si:kleene_close
+            $myparser si:void2_state_push
+        sequence_271
+            $myparser si:kleene_close
         }
         return
     }
     
-    method sequence_271 {} {
+    proc sequence_271 {} { upvar 1 myparser myparser
         # x
         #     (MulOp)
         #     (WS)
         #     (StrExpr)
     
-        my si:value_state_push
-        my sym_MulOp
-        my si:valuevalue_part
-        my sym_WS
-        my si:valuevalue_part
-        my sym_StrExpr
-        my si:value_state_merge
+        $myparser si:value_state_push
+        sym_MulOp
+        $myparser si:valuevalue_part
+        sym_WS
+        $myparser si:valuevalue_part
+        sym_StrExpr
+        $myparser si:value_state_merge
         return
     }
     
@@ -1614,12 +1628,12 @@ oo::class create isbl-parser {
     # value Symbol 'MulOp'
     #
     
-    method sym_MulOp {} {
+    proc sym_MulOp {} { upvar 1 myparser myparser
         # [*/%]
     
-        my si:void_symbol_start MulOp
-        my si:next_class */%
-        my si:void_leaf_symbol_end MulOp
+        $myparser si:void_symbol_start MulOp
+        $myparser si:next_class */%
+        $myparser si:void_leaf_symbol_end MulOp
         return
     }
     
@@ -1627,12 +1641,12 @@ oo::class create isbl-parser {
     # leaf Symbol 'Name'
     #
     
-    method sym_Name {} {
+    proc sym_Name {} { upvar 1 myparser myparser
         # (Ident)
     
-        my si:value_symbol_start Name
-        my sym_Ident
-        my si:value_leaf_symbol_end Name
+        $myparser si:value_symbol_start Name
+        sym_Ident
+        $myparser si:value_leaf_symbol_end Name
         return
     }
     
@@ -1640,12 +1654,12 @@ oo::class create isbl-parser {
     # value Symbol 'NULL'
     #
     
-    method sym_NULL {} {
+    proc sym_NULL {} { upvar 1 myparser myparser
         # "NULL"
     
-        my si:void_symbol_start NULL
-        my si:next_str NULL
-        my si:void_leaf_symbol_end NULL
+        $myparser si:void_symbol_start NULL
+        $myparser si:next_str NULL
+        $myparser si:void_leaf_symbol_end NULL
         return
     }
     
@@ -1653,27 +1667,27 @@ oo::class create isbl-parser {
     # value Symbol 'Number'
     #
     
-    method sym_Number {} {
+    proc sym_Number {} { upvar 1 myparser myparser
         # /
         #     (Real)
         #     (Int)
     
-        my si:value_symbol_start Number
-        my choice_286
-        my si:reduce_symbol_end Number
+        $myparser si:value_symbol_start Number
+        choice_286
+        $myparser si:reduce_symbol_end Number
         return
     }
     
-    method choice_286 {} {
+    proc choice_286 {} { upvar 1 myparser myparser
         # /
         #     (Real)
         #     (Int)
     
-        my si:value_state_push
-        my sym_Real
-        my si:valuevalue_branch
-        my sym_Int
-        my si:value_state_merge
+        $myparser si:value_state_push
+        sym_Real
+        $myparser si:valuevalue_branch
+        sym_Int
+        $myparser si:value_state_merge
         return
     }
     
@@ -1681,7 +1695,7 @@ oo::class create isbl-parser {
     # value Symbol 'OrExpr'
     #
     
-    method sym_OrExpr {} {
+    proc sym_OrExpr {} { upvar 1 myparser myparser
         # x
         #     (AndExpr)
         #     (WS)
@@ -1691,13 +1705,13 @@ oo::class create isbl-parser {
         #             (WS)
         #             (AndExpr)
     
-        my si:value_symbol_start OrExpr
-        my sequence_298
-        my si:reduce_symbol_end OrExpr
+        $myparser si:value_symbol_start OrExpr
+        sequence_298
+        $myparser si:reduce_symbol_end OrExpr
         return
     }
     
-    method sequence_298 {} {
+    proc sequence_298 {} { upvar 1 myparser myparser
         # x
         #     (AndExpr)
         #     (WS)
@@ -1707,17 +1721,17 @@ oo::class create isbl-parser {
         #             (WS)
         #             (AndExpr)
     
-        my si:value_state_push
-        my sym_AndExpr
-        my si:valuevalue_part
-        my sym_WS
-        my si:valuevalue_part
-        my kleene_296
-        my si:value_state_merge
+        $myparser si:value_state_push
+        sym_AndExpr
+        $myparser si:valuevalue_part
+        sym_WS
+        $myparser si:valuevalue_part
+        kleene_296
+        $myparser si:value_state_merge
         return
     }
     
-    method kleene_296 {} {
+    proc kleene_296 {} { upvar 1 myparser myparser
         # *
         #     x
         #         (OrOp)
@@ -1725,26 +1739,26 @@ oo::class create isbl-parser {
         #         (AndExpr)
     
         while {1} {
-            my si:void2_state_push
-        my sequence_294
-            my si:kleene_close
+            $myparser si:void2_state_push
+        sequence_294
+            $myparser si:kleene_close
         }
         return
     }
     
-    method sequence_294 {} {
+    proc sequence_294 {} { upvar 1 myparser myparser
         # x
         #     (OrOp)
         #     (WS)
         #     (AndExpr)
     
-        my si:value_state_push
-        my sym_OrOp
-        my si:valuevalue_part
-        my sym_WS
-        my si:valuevalue_part
-        my sym_AndExpr
-        my si:value_state_merge
+        $myparser si:value_state_push
+        sym_OrOp
+        $myparser si:valuevalue_part
+        sym_WS
+        $myparser si:valuevalue_part
+        sym_AndExpr
+        $myparser si:value_state_merge
         return
     }
     
@@ -1752,27 +1766,27 @@ oo::class create isbl-parser {
     # value Symbol 'OrOp'
     #
     
-    method sym_OrOp {} {
+    proc sym_OrOp {} { upvar 1 myparser myparser
         # /
         #     "OR"
         #     "or"
     
-        my si:void_symbol_start OrOp
-        my choice_303
-        my si:void_leaf_symbol_end OrOp
+        $myparser si:void_symbol_start OrOp
+        choice_303
+        $myparser si:void_leaf_symbol_end OrOp
         return
     }
     
-    method choice_303 {} {
+    proc choice_303 {} { upvar 1 myparser myparser
         # /
         #     "OR"
         #     "or"
     
-        my si:void_state_push
-        my si:next_str OR
-        my si:voidvoid_branch
-        my si:next_str or
-        my si:void_state_merge
+        $myparser si:void_state_push
+        $myparser si:next_str OR
+        $myparser si:voidvoid_branch
+        $myparser si:next_str or
+        $myparser si:void_state_merge
         return
     }
     
@@ -1780,7 +1794,7 @@ oo::class create isbl-parser {
     # leaf Symbol 'OutArgs'
     #
     
-    method sym_OutArgs {} {
+    proc sym_OutArgs {} { upvar 1 myparser myparser
         # x
         #     (Name)
         #     (WS)
@@ -1790,13 +1804,13 @@ oo::class create isbl-parser {
         #             (WS)
         #             (Name)
     
-        my si:value_symbol_start OutArgs
-        my sequence_315
-        my si:value_leaf_symbol_end OutArgs
+        $myparser si:value_symbol_start OutArgs
+        sequence_315
+        $myparser si:value_leaf_symbol_end OutArgs
         return
     }
     
-    method sequence_315 {} {
+    proc sequence_315 {} { upvar 1 myparser myparser
         # x
         #     (Name)
         #     (WS)
@@ -1806,17 +1820,17 @@ oo::class create isbl-parser {
         #             (WS)
         #             (Name)
     
-        my si:value_state_push
-        my sym_Name
-        my si:valuevalue_part
-        my sym_WS
-        my si:valuevalue_part
-        my kleene_313
-        my si:value_state_merge
+        $myparser si:value_state_push
+        sym_Name
+        $myparser si:valuevalue_part
+        sym_WS
+        $myparser si:valuevalue_part
+        kleene_313
+        $myparser si:value_state_merge
         return
     }
     
-    method kleene_313 {} {
+    proc kleene_313 {} { upvar 1 myparser myparser
         # *
         #     x
         #         ','
@@ -1824,26 +1838,26 @@ oo::class create isbl-parser {
         #         (Name)
     
         while {1} {
-            my si:void2_state_push
-        my sequence_311
-            my si:kleene_close
+            $myparser si:void2_state_push
+        sequence_311
+            $myparser si:kleene_close
         }
         return
     }
     
-    method sequence_311 {} {
+    proc sequence_311 {} { upvar 1 myparser myparser
         # x
         #     ','
         #     (WS)
         #     (Name)
     
-        my si:void_state_push
-        my si:next_char ,
-        my si:voidvoid_part
-        my sym_WS
-        my si:voidvalue_part
-        my sym_Name
-        my si:value_state_merge
+        $myparser si:void_state_push
+        $myparser si:next_char ,
+        $myparser si:voidvoid_part
+        sym_WS
+        $myparser si:voidvalue_part
+        sym_Name
+        $myparser si:value_state_merge
         return
     }
     
@@ -1851,7 +1865,7 @@ oo::class create isbl-parser {
     # value Symbol 'Phrase'
     #
     
-    method sym_Phrase {} {
+    proc sym_Phrase {} { upvar 1 myparser myparser
         # /
         #     x
         #         (WS)
@@ -1864,13 +1878,13 @@ oo::class create isbl-parser {
         #         (WS)
         #         (EOF)
     
-        my si:value_symbol_start Phrase
-        my choice_330
-        my si:reduce_symbol_end Phrase
+        $myparser si:value_symbol_start Phrase
+        choice_330
+        $myparser si:reduce_symbol_end Phrase
         return
     }
     
-    method choice_330 {} {
+    proc choice_330 {} { upvar 1 myparser myparser
         # /
         #     x
         #         (WS)
@@ -1883,49 +1897,49 @@ oo::class create isbl-parser {
         #         (WS)
         #         (EOF)
     
-        my si:value_state_push
-        my sequence_322
-        my si:valuevalue_branch
-        my sequence_328
-        my si:value_state_merge
+        $myparser si:value_state_push
+        sequence_322
+        $myparser si:valuevalue_branch
+        sequence_328
+        $myparser si:value_state_merge
         return
     }
     
-    method sequence_322 {} {
+    proc sequence_322 {} { upvar 1 myparser myparser
         # x
         #     (WS)
         #     (Assign)
         #     (WS)
         #     (EOF)
     
-        my si:void_state_push
-        my sym_WS
-        my si:voidvalue_part
-        my sym_Assign
-        my si:valuevalue_part
-        my sym_WS
-        my si:valuevalue_part
-        my sym_EOF
-        my si:value_state_merge
+        $myparser si:void_state_push
+        sym_WS
+        $myparser si:voidvalue_part
+        sym_Assign
+        $myparser si:valuevalue_part
+        sym_WS
+        $myparser si:valuevalue_part
+        sym_EOF
+        $myparser si:value_state_merge
         return
     }
     
-    method sequence_328 {} {
+    proc sequence_328 {} { upvar 1 myparser myparser
         # x
         #     (WS)
         #     (TopExpr)
         #     (WS)
         #     (EOF)
     
-        my si:void_state_push
-        my sym_WS
-        my si:voidvalue_part
-        my sym_TopExpr
-        my si:valuevalue_part
-        my sym_WS
-        my si:valuevalue_part
-        my sym_EOF
-        my si:value_state_merge
+        $myparser si:void_state_push
+        sym_WS
+        $myparser si:voidvalue_part
+        sym_TopExpr
+        $myparser si:valuevalue_part
+        sym_WS
+        $myparser si:valuevalue_part
+        sym_EOF
+        $myparser si:value_state_merge
         return
     }
     
@@ -1933,7 +1947,7 @@ oo::class create isbl-parser {
     # value Symbol 'Project'
     #
     
-    method sym_Project {} {
+    proc sym_Project {} { upvar 1 myparser myparser
         # /
         #     (Tupple)
         #     x
@@ -1945,13 +1959,13 @@ oo::class create isbl-parser {
         #                 (WS)
         #                 (Cols)
     
-        my si:value_symbol_start Project
-        my choice_345
-        my si:reduce_symbol_end Project
+        $myparser si:value_symbol_start Project
+        choice_345
+        $myparser si:reduce_symbol_end Project
         return
     }
     
-    method choice_345 {} {
+    proc choice_345 {} { upvar 1 myparser myparser
         # /
         #     (Tupple)
         #     x
@@ -1963,15 +1977,15 @@ oo::class create isbl-parser {
         #                 (WS)
         #                 (Cols)
     
-        my si:value_state_push
-        my sym_Tupple
-        my si:valuevalue_branch
-        my sequence_343
-        my si:value_state_merge
+        $myparser si:value_state_push
+        sym_Tupple
+        $myparser si:valuevalue_branch
+        sequence_343
+        $myparser si:value_state_merge
         return
     }
     
-    method sequence_343 {} {
+    proc sequence_343 {} { upvar 1 myparser myparser
         # x
         #     (RelValue)
         #     (WS)
@@ -1981,17 +1995,17 @@ oo::class create isbl-parser {
         #             (WS)
         #             (Cols)
     
-        my si:value_state_push
-        my sym_RelValue
-        my si:valuevalue_part
-        my sym_WS
-        my si:valuevalue_part
-        my kleene_341
-        my si:value_state_merge
+        $myparser si:value_state_push
+        sym_RelValue
+        $myparser si:valuevalue_part
+        sym_WS
+        $myparser si:valuevalue_part
+        kleene_341
+        $myparser si:value_state_merge
         return
     }
     
-    method kleene_341 {} {
+    proc kleene_341 {} { upvar 1 myparser myparser
         # *
         #     x
         #         (ProjOp)
@@ -1999,26 +2013,26 @@ oo::class create isbl-parser {
         #         (Cols)
     
         while {1} {
-            my si:void2_state_push
-        my sequence_339
-            my si:kleene_close
+            $myparser si:void2_state_push
+        sequence_339
+            $myparser si:kleene_close
         }
         return
     }
     
-    method sequence_339 {} {
+    proc sequence_339 {} { upvar 1 myparser myparser
         # x
         #     (ProjOp)
         #     (WS)
         #     (Cols)
     
-        my si:value_state_push
-        my sym_ProjOp
-        my si:valuevalue_part
-        my sym_WS
-        my si:valuevalue_part
-        my sym_Cols
-        my si:value_state_merge
+        $myparser si:value_state_push
+        sym_ProjOp
+        $myparser si:valuevalue_part
+        sym_WS
+        $myparser si:valuevalue_part
+        sym_Cols
+        $myparser si:value_state_merge
         return
     }
     
@@ -2026,12 +2040,12 @@ oo::class create isbl-parser {
     # value Symbol 'ProjOp'
     #
     
-    method sym_ProjOp {} {
+    proc sym_ProjOp {} { upvar 1 myparser myparser
         # '%'
     
-        my si:void_symbol_start ProjOp
-        my si:next_char %
-        my si:void_leaf_symbol_end ProjOp
+        $myparser si:void_symbol_start ProjOp
+        $myparser si:next_char %
+        $myparser si:void_leaf_symbol_end ProjOp
         return
     }
     
@@ -2039,7 +2053,7 @@ oo::class create isbl-parser {
     # value Symbol 'Real'
     #
     
-    method sym_Real {} {
+    proc sym_Real {} { upvar 1 myparser myparser
         # x
         #     ?
         #         (Sign)
@@ -2048,13 +2062,13 @@ oo::class create isbl-parser {
         #             <ddigit>
         #     (Frac)
     
-        my si:value_symbol_start Real
-        my sequence_357
-        my si:reduce_symbol_end Real
+        $myparser si:value_symbol_start Real
+        sequence_357
+        $myparser si:reduce_symbol_end Real
         return
     }
     
-    method sequence_357 {} {
+    proc sequence_357 {} { upvar 1 myparser myparser
         # x
         #     ?
         #         (Sign)
@@ -2063,24 +2077,24 @@ oo::class create isbl-parser {
         #             <ddigit>
         #     (Frac)
     
-        my si:value_state_push
-        my optional_237
-        my si:valuevalue_part
-        my optional_354
-        my si:valuevalue_part
-        my sym_Frac
-        my si:value_state_merge
+        $myparser si:value_state_push
+        optional_237
+        $myparser si:valuevalue_part
+        optional_354
+        $myparser si:valuevalue_part
+        sym_Frac
+        $myparser si:value_state_merge
         return
     }
     
-    method optional_354 {} {
+    proc optional_354 {} { upvar 1 myparser myparser
         # ?
         #     +
         #         <ddigit>
     
-        my si:void2_state_push
-        my poskleene_240
-        my si:void_state_merge_ok
+        $myparser si:void2_state_push
+        poskleene_240
+        $myparser si:void_state_merge_ok
         return
     }
     
@@ -2088,12 +2102,12 @@ oo::class create isbl-parser {
     # value Symbol 'RelExpr'
     #
     
-    method sym_RelExpr {} {
+    proc sym_RelExpr {} { upvar 1 myparser myparser
         # (Sum)
     
-        my si:value_symbol_start RelExpr
-        my sym_Sum
-        my si:reduce_symbol_end RelExpr
+        $myparser si:value_symbol_start RelExpr
+        sym_Sum
+        $myparser si:reduce_symbol_end RelExpr
         return
     }
     
@@ -2101,7 +2115,7 @@ oo::class create isbl-parser {
     # value Symbol 'RelValue'
     #
     
-    method sym_RelValue {} {
+    proc sym_RelValue {} { upvar 1 myparser myparser
         # /
         #     x
         #         '\('
@@ -2111,13 +2125,13 @@ oo::class create isbl-parser {
         #         '\)'
         #     (Table)
     
-        my si:value_symbol_start RelValue
-        my choice_370
-        my si:reduce_symbol_end RelValue
+        $myparser si:value_symbol_start RelValue
+        choice_370
+        $myparser si:reduce_symbol_end RelValue
         return
     }
     
-    method choice_370 {} {
+    proc choice_370 {} { upvar 1 myparser myparser
         # /
         #     x
         #         '\('
@@ -2127,15 +2141,15 @@ oo::class create isbl-parser {
         #         '\)'
         #     (Table)
     
-        my si:value_state_push
-        my sequence_367
-        my si:valuevalue_branch
-        my sym_Table
-        my si:value_state_merge
+        $myparser si:value_state_push
+        sequence_367
+        $myparser si:valuevalue_branch
+        sym_Table
+        $myparser si:value_state_merge
         return
     }
     
-    method sequence_367 {} {
+    proc sequence_367 {} { upvar 1 myparser myparser
         # x
         #     '\('
         #     (WS)
@@ -2143,17 +2157,17 @@ oo::class create isbl-parser {
         #     (WS)
         #     '\)'
     
-        my si:void_state_push
-        my si:next_char \50
-        my si:voidvoid_part
-        my sym_WS
-        my si:voidvalue_part
-        my sym_RelExpr
-        my si:valuevalue_part
-        my sym_WS
-        my si:valuevalue_part
-        my si:next_char \51
-        my si:value_state_merge
+        $myparser si:void_state_push
+        $myparser si:next_char \50
+        $myparser si:voidvoid_part
+        sym_WS
+        $myparser si:voidvalue_part
+        sym_RelExpr
+        $myparser si:valuevalue_part
+        sym_WS
+        $myparser si:valuevalue_part
+        $myparser si:next_char \51
+        $myparser si:value_state_merge
         return
     }
     
@@ -2161,12 +2175,12 @@ oo::class create isbl-parser {
     # value Symbol 'RP'
     #
     
-    method sym_RP {} {
+    proc sym_RP {} { upvar 1 myparser myparser
         # '\('
     
-        my si:void_symbol_start RP
-        my si:next_char \50
-        my si:void_leaf_symbol_end RP
+        $myparser si:void_symbol_start RP
+        $myparser si:next_char \50
+        $myparser si:void_leaf_symbol_end RP
         return
     }
     
@@ -2174,7 +2188,7 @@ oo::class create isbl-parser {
     # value Symbol 'Select'
     #
     
-    method sym_Select {} {
+    proc sym_Select {} { upvar 1 myparser myparser
         # x
         #     (Project)
         #     (WS)
@@ -2184,13 +2198,13 @@ oo::class create isbl-parser {
         #             (WS)
         #             (SelExpr)
     
-        my si:value_symbol_start Select
-        my sequence_384
-        my si:reduce_symbol_end Select
+        $myparser si:value_symbol_start Select
+        sequence_384
+        $myparser si:reduce_symbol_end Select
         return
     }
     
-    method sequence_384 {} {
+    proc sequence_384 {} { upvar 1 myparser myparser
         # x
         #     (Project)
         #     (WS)
@@ -2200,17 +2214,17 @@ oo::class create isbl-parser {
         #             (WS)
         #             (SelExpr)
     
-        my si:value_state_push
-        my sym_Project
-        my si:valuevalue_part
-        my sym_WS
-        my si:valuevalue_part
-        my kleene_382
-        my si:value_state_merge
+        $myparser si:value_state_push
+        sym_Project
+        $myparser si:valuevalue_part
+        sym_WS
+        $myparser si:valuevalue_part
+        kleene_382
+        $myparser si:value_state_merge
         return
     }
     
-    method kleene_382 {} {
+    proc kleene_382 {} { upvar 1 myparser myparser
         # *
         #     x
         #         (SelOp)
@@ -2218,26 +2232,26 @@ oo::class create isbl-parser {
         #         (SelExpr)
     
         while {1} {
-            my si:void2_state_push
-        my sequence_380
-            my si:kleene_close
+            $myparser si:void2_state_push
+        sequence_380
+            $myparser si:kleene_close
         }
         return
     }
     
-    method sequence_380 {} {
+    proc sequence_380 {} { upvar 1 myparser myparser
         # x
         #     (SelOp)
         #     (WS)
         #     (SelExpr)
     
-        my si:value_state_push
-        my sym_SelOp
-        my si:valuevalue_part
-        my sym_WS
-        my si:valuevalue_part
-        my sym_SelExpr
-        my si:value_state_merge
+        $myparser si:value_state_push
+        sym_SelOp
+        $myparser si:valuevalue_part
+        sym_WS
+        $myparser si:valuevalue_part
+        sym_SelExpr
+        $myparser si:value_state_merge
         return
     }
     
@@ -2245,12 +2259,12 @@ oo::class create isbl-parser {
     # leaf Symbol 'SelExpr'
     #
     
-    method sym_SelExpr {} {
+    proc sym_SelExpr {} { upvar 1 myparser myparser
         # (Expr)
     
-        my si:value_symbol_start SelExpr
-        my sym_Expr
-        my si:value_leaf_symbol_end SelExpr
+        $myparser si:value_symbol_start SelExpr
+        sym_Expr
+        $myparser si:value_leaf_symbol_end SelExpr
         return
     }
     
@@ -2258,12 +2272,12 @@ oo::class create isbl-parser {
     # value Symbol 'SelOp'
     #
     
-    method sym_SelOp {} {
+    proc sym_SelOp {} { upvar 1 myparser myparser
         # ':'
     
-        my si:void_symbol_start SelOp
-        my si:next_char :
-        my si:void_leaf_symbol_end SelOp
+        $myparser si:void_symbol_start SelOp
+        $myparser si:next_char :
+        $myparser si:void_leaf_symbol_end SelOp
         return
     }
     
@@ -2271,12 +2285,12 @@ oo::class create isbl-parser {
     # value Symbol 'Sign'
     #
     
-    method sym_Sign {} {
+    proc sym_Sign {} { upvar 1 myparser myparser
         # [+-]
     
-        my si:void_symbol_start Sign
-        my si:next_class +-
-        my si:void_leaf_symbol_end Sign
+        $myparser si:void_symbol_start Sign
+        $myparser si:next_class +-
+        $myparser si:void_leaf_symbol_end Sign
         return
     }
     
@@ -2284,7 +2298,7 @@ oo::class create isbl-parser {
     # value Symbol 'StrExpr'
     #
     
-    method sym_StrExpr {} {
+    proc sym_StrExpr {} { upvar 1 myparser myparser
         # x
         #     (Value)
         #     (WS)
@@ -2294,13 +2308,13 @@ oo::class create isbl-parser {
         #             (WS)
         #             (Value)
     
-        my si:value_symbol_start StrExpr
-        my sequence_402
-        my si:reduce_symbol_end StrExpr
+        $myparser si:value_symbol_start StrExpr
+        sequence_402
+        $myparser si:reduce_symbol_end StrExpr
         return
     }
     
-    method sequence_402 {} {
+    proc sequence_402 {} { upvar 1 myparser myparser
         # x
         #     (Value)
         #     (WS)
@@ -2310,17 +2324,17 @@ oo::class create isbl-parser {
         #             (WS)
         #             (Value)
     
-        my si:value_state_push
-        my sym_Value
-        my si:valuevalue_part
-        my sym_WS
-        my si:valuevalue_part
-        my kleene_400
-        my si:value_state_merge
+        $myparser si:value_state_push
+        sym_Value
+        $myparser si:valuevalue_part
+        sym_WS
+        $myparser si:valuevalue_part
+        kleene_400
+        $myparser si:value_state_merge
         return
     }
     
-    method kleene_400 {} {
+    proc kleene_400 {} { upvar 1 myparser myparser
         # *
         #     x
         #         (StrOp)
@@ -2328,26 +2342,26 @@ oo::class create isbl-parser {
         #         (Value)
     
         while {1} {
-            my si:void2_state_push
-        my sequence_398
-            my si:kleene_close
+            $myparser si:void2_state_push
+        sequence_398
+            $myparser si:kleene_close
         }
         return
     }
     
-    method sequence_398 {} {
+    proc sequence_398 {} { upvar 1 myparser myparser
         # x
         #     (StrOp)
         #     (WS)
         #     (Value)
     
-        my si:value_state_push
-        my sym_StrOp
-        my si:valuevalue_part
-        my sym_WS
-        my si:valuevalue_part
-        my sym_Value
-        my si:value_state_merge
+        $myparser si:value_state_push
+        sym_StrOp
+        $myparser si:valuevalue_part
+        sym_WS
+        $myparser si:valuevalue_part
+        sym_Value
+        $myparser si:value_state_merge
         return
     }
     
@@ -2355,7 +2369,7 @@ oo::class create isbl-parser {
     # leaf Symbol 'String'
     #
     
-    method sym_String {} {
+    proc sym_String {} { upvar 1 myparser myparser
         # /
         #     x
         #         '\"'
@@ -2374,13 +2388,13 @@ oo::class create isbl-parser {
         #                 <dot>
         #         '''
     
-        my si:void_symbol_start String
-        my choice_426
-        my si:void_leaf_symbol_end String
+        $myparser si:void_symbol_start String
+        choice_426
+        $myparser si:void_leaf_symbol_end String
         return
     }
     
-    method choice_426 {} {
+    proc choice_426 {} { upvar 1 myparser myparser
         # /
         #     x
         #         '\"'
@@ -2399,15 +2413,15 @@ oo::class create isbl-parser {
         #                 <dot>
         #         '''
     
-        my si:void_state_push
-        my sequence_415
-        my si:voidvoid_branch
-        my sequence_424
-        my si:void_state_merge
+        $myparser si:void_state_push
+        sequence_415
+        $myparser si:voidvoid_branch
+        sequence_424
+        $myparser si:void_state_merge
         return
     }
     
-    method sequence_415 {} {
+    proc sequence_415 {} { upvar 1 myparser myparser
         # x
         #     '\"'
         #     *
@@ -2417,17 +2431,17 @@ oo::class create isbl-parser {
         #             <dot>
         #     '\"'
     
-        my si:void_state_push
-        my si:next_char \42
-        my si:voidvoid_part
-        my kleene_412
-        my si:voidvoid_part
-        my si:next_char \42
-        my si:void_state_merge
+        $myparser si:void_state_push
+        $myparser si:next_char \42
+        $myparser si:voidvoid_part
+        kleene_412
+        $myparser si:voidvoid_part
+        $myparser si:next_char \42
+        $myparser si:void_state_merge
         return
     }
     
-    method kleene_412 {} {
+    proc kleene_412 {} { upvar 1 myparser myparser
         # *
         #     x
         #         !
@@ -2435,38 +2449,38 @@ oo::class create isbl-parser {
         #         <dot>
     
         while {1} {
-            my si:void2_state_push
-        my sequence_410
-            my si:kleene_close
+            $myparser si:void2_state_push
+        sequence_410
+            $myparser si:kleene_close
         }
         return
     }
     
-    method sequence_410 {} {
+    proc sequence_410 {} { upvar 1 myparser myparser
         # x
         #     !
         #         '\"'
         #     <dot>
     
-        my si:void_state_push
-        my notahead_407
-        my si:voidvoid_part
-        my i_input_next dot
-        my si:void_state_merge
+        $myparser si:void_state_push
+        notahead_407
+        $myparser si:voidvoid_part
+        $myparser i_input_next dot
+        $myparser si:void_state_merge
         return
     }
     
-    method notahead_407 {} {
+    proc notahead_407 {} { upvar 1 myparser myparser
         # !
         #     '\"'
     
-        my i_loc_push
-        my si:next_char \42
-        my si:void_notahead_exit
+        $myparser i_loc_push
+        $myparser si:next_char \42
+        $myparser si:void_notahead_exit
         return
     }
     
-    method sequence_424 {} {
+    proc sequence_424 {} { upvar 1 myparser myparser
         # x
         #     '''
         #     *
@@ -2476,13 +2490,13 @@ oo::class create isbl-parser {
         #             <dot>
         #     '''
     
-        my si:void_state_push
-        my si:next_char '
-        my si:voidvoid_part
-        my kleene_412
-        my si:voidvoid_part
-        my si:next_char '
-        my si:void_state_merge
+        $myparser si:void_state_push
+        $myparser si:next_char '
+        $myparser si:voidvoid_part
+        kleene_412
+        $myparser si:voidvoid_part
+        $myparser si:next_char '
+        $myparser si:void_state_merge
         return
     }
     
@@ -2490,12 +2504,12 @@ oo::class create isbl-parser {
     # value Symbol 'StrOp'
     #
     
-    method sym_StrOp {} {
+    proc sym_StrOp {} { upvar 1 myparser myparser
         # "||"
     
-        my si:void_symbol_start StrOp
-        my si:next_str ||
-        my si:void_leaf_symbol_end StrOp
+        $myparser si:void_symbol_start StrOp
+        $myparser si:next_str ||
+        $myparser si:void_leaf_symbol_end StrOp
         return
     }
     
@@ -2503,7 +2517,7 @@ oo::class create isbl-parser {
     # value Symbol 'Sum'
     #
     
-    method sym_Sum {} {
+    proc sym_Sum {} { upvar 1 myparser myparser
         # x
         #     (Join)
         #     (WS)
@@ -2513,13 +2527,13 @@ oo::class create isbl-parser {
         #             (WS)
         #             (Join)
     
-        my si:value_symbol_start Sum
-        my sequence_440
-        my si:reduce_symbol_end Sum
+        $myparser si:value_symbol_start Sum
+        sequence_440
+        $myparser si:reduce_symbol_end Sum
         return
     }
     
-    method sequence_440 {} {
+    proc sequence_440 {} { upvar 1 myparser myparser
         # x
         #     (Join)
         #     (WS)
@@ -2529,17 +2543,17 @@ oo::class create isbl-parser {
         #             (WS)
         #             (Join)
     
-        my si:value_state_push
-        my sym_Join
-        my si:valuevalue_part
-        my sym_WS
-        my si:valuevalue_part
-        my kleene_438
-        my si:value_state_merge
+        $myparser si:value_state_push
+        sym_Join
+        $myparser si:valuevalue_part
+        sym_WS
+        $myparser si:valuevalue_part
+        kleene_438
+        $myparser si:value_state_merge
         return
     }
     
-    method kleene_438 {} {
+    proc kleene_438 {} { upvar 1 myparser myparser
         # *
         #     x
         #         (SumOp)
@@ -2547,26 +2561,26 @@ oo::class create isbl-parser {
         #         (Join)
     
         while {1} {
-            my si:void2_state_push
-        my sequence_436
-            my si:kleene_close
+            $myparser si:void2_state_push
+        sequence_436
+            $myparser si:kleene_close
         }
         return
     }
     
-    method sequence_436 {} {
+    proc sequence_436 {} { upvar 1 myparser myparser
         # x
         #     (SumOp)
         #     (WS)
         #     (Join)
     
-        my si:value_state_push
-        my sym_SumOp
-        my si:valuevalue_part
-        my sym_WS
-        my si:valuevalue_part
-        my sym_Join
-        my si:value_state_merge
+        $myparser si:value_state_push
+        sym_SumOp
+        $myparser si:valuevalue_part
+        sym_WS
+        $myparser si:valuevalue_part
+        sym_Join
+        $myparser si:value_state_merge
         return
     }
     
@@ -2574,12 +2588,12 @@ oo::class create isbl-parser {
     # value Symbol 'SumOp'
     #
     
-    method sym_SumOp {} {
+    proc sym_SumOp {} { upvar 1 myparser myparser
         # [+-.]
     
-        my si:void_symbol_start SumOp
-        my si:next_class +-.
-        my si:void_leaf_symbol_end SumOp
+        $myparser si:void_symbol_start SumOp
+        $myparser si:next_class +-.
+        $myparser si:void_leaf_symbol_end SumOp
         return
     }
     
@@ -2587,12 +2601,12 @@ oo::class create isbl-parser {
     # leaf Symbol 'Table'
     #
     
-    method sym_Table {} {
+    proc sym_Table {} { upvar 1 myparser myparser
         # (Ident)
     
-        my si:value_symbol_start Table
-        my sym_Ident
-        my si:value_leaf_symbol_end Table
+        $myparser si:value_symbol_start Table
+        sym_Ident
+        $myparser si:value_leaf_symbol_end Table
         return
     }
     
@@ -2600,12 +2614,12 @@ oo::class create isbl-parser {
     # value Symbol 'TopExpr'
     #
     
-    method sym_TopExpr {} {
+    proc sym_TopExpr {} { upvar 1 myparser myparser
         # (RelExpr)
     
-        my si:value_symbol_start TopExpr
-        my sym_RelExpr
-        my si:reduce_symbol_end TopExpr
+        $myparser si:value_symbol_start TopExpr
+        sym_RelExpr
+        $myparser si:reduce_symbol_end TopExpr
         return
     }
     
@@ -2613,15 +2627,15 @@ oo::class create isbl-parser {
     # value Symbol 'Tupple'
     #
     
-    method sym_Tupple {} {
+    proc sym_Tupple {} { upvar 1 myparser myparser
         # x
         #     (ProjOp)
         #     (WS)
         #     (Cols)
     
-        my si:value_symbol_start Tupple
-        my sequence_339
-        my si:reduce_symbol_end Tupple
+        $myparser si:value_symbol_start Tupple
+        sequence_339
+        $myparser si:reduce_symbol_end Tupple
         return
     }
     
@@ -2629,7 +2643,7 @@ oo::class create isbl-parser {
     # value Symbol 'Value'
     #
     
-    method sym_Value {} {
+    proc sym_Value {} { upvar 1 myparser myparser
         # /
         #     x
         #         (RP)
@@ -2644,13 +2658,13 @@ oo::class create isbl-parser {
         #     (String)
         #     (VName)
     
-        my si:value_symbol_start Value
-        my choice_467
-        my si:reduce_symbol_end Value
+        $myparser si:value_symbol_start Value
+        choice_467
+        $myparser si:reduce_symbol_end Value
         return
     }
     
-    method choice_467 {} {
+    proc choice_467 {} { upvar 1 myparser myparser
         # /
         #     x
         #         (RP)
@@ -2665,25 +2679,25 @@ oo::class create isbl-parser {
         #     (String)
         #     (VName)
     
-        my si:value_state_push
-        my sequence_459
-        my si:valuevalue_branch
-        my sym_Func
-        my si:valuevalue_branch
-        my sym_NULL
-        my si:valuevalue_branch
-        my sym_Real
-        my si:valuevalue_branch
-        my sym_Int
-        my si:valuevalue_branch
-        my sym_String
-        my si:valuevalue_branch
-        my sym_VName
-        my si:value_state_merge
+        $myparser si:value_state_push
+        sequence_459
+        $myparser si:valuevalue_branch
+        sym_Func
+        $myparser si:valuevalue_branch
+        sym_NULL
+        $myparser si:valuevalue_branch
+        sym_Real
+        $myparser si:valuevalue_branch
+        sym_Int
+        $myparser si:valuevalue_branch
+        sym_String
+        $myparser si:valuevalue_branch
+        sym_VName
+        $myparser si:value_state_merge
         return
     }
     
-    method sequence_459 {} {
+    proc sequence_459 {} { upvar 1 myparser myparser
         # x
         #     (RP)
         #     (WS)
@@ -2691,17 +2705,17 @@ oo::class create isbl-parser {
         #     (WS)
         #     (LP)
     
-        my si:value_state_push
-        my sym_RP
-        my si:valuevalue_part
-        my sym_WS
-        my si:valuevalue_part
-        my sym_Expr
-        my si:valuevalue_part
-        my sym_WS
-        my si:valuevalue_part
-        my sym_LP
-        my si:value_state_merge
+        $myparser si:value_state_push
+        sym_RP
+        $myparser si:valuevalue_part
+        sym_WS
+        $myparser si:valuevalue_part
+        sym_Expr
+        $myparser si:valuevalue_part
+        sym_WS
+        $myparser si:valuevalue_part
+        sym_LP
+        $myparser si:value_state_merge
         return
     }
     
@@ -2709,12 +2723,12 @@ oo::class create isbl-parser {
     # leaf Symbol 'VName'
     #
     
-    method sym_VName {} {
+    proc sym_VName {} { upvar 1 myparser myparser
         # (Ident)
     
-        my si:value_symbol_start VName
-        my sym_Ident
-        my si:value_leaf_symbol_end VName
+        $myparser si:value_symbol_start VName
+        sym_Ident
+        $myparser si:value_leaf_symbol_end VName
         return
     }
     
@@ -2722,24 +2736,24 @@ oo::class create isbl-parser {
     # void Symbol 'WS'
     #
     
-    method sym_WS {} {
+    proc sym_WS {} { upvar 1 myparser myparser
         # *
         #     <space>
     
-        my si:void_void_symbol_start WS
-        my kleene_473
-        my si:void_clear_symbol_end WS
+        $myparser si:void_void_symbol_start WS
+        kleene_473
+        $myparser si:void_clear_symbol_end WS
         return
     }
     
-    method kleene_473 {} {
+    proc kleene_473 {} { upvar 1 myparser myparser
         # *
         #     <space>
     
         while {1} {
-            my si:void2_state_push
-        my si:next_space
-            my si:kleene_close
+            $myparser si:void2_state_push
+        $myparser si:next_space
+            $myparser si:kleene_close
         }
         return
     }

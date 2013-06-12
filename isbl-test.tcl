@@ -1,7 +1,7 @@
 #!/usr/bin/env tclkit8.6
 #
 
- lappend auto_path /home/john/lib
+ lappend auto_path /home/john/lib /Users/john/lib
 
  ::tcl::tm::path add .
 

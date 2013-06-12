@@ -1,12 +1,13 @@
 
- lappend auto_path /home/john/pkg/tcllib-1.13/modules
+ set HOME /Users/john
+
+ lappend auto_path $HOME/lib/tcllib-1.15/modules 
 
  package require TclOO
-# package require snit
+ package require snit
  package require sqlite3
  package require tcl::chan::events
  package require tcl::chan::string
-
 
  source isbl-parser.tcl
 
