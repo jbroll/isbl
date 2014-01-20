@@ -198,7 +198,6 @@ proc intersect3 {list1 list2 inList1 inList2 inBoth} {
 	     } else {
 		 error ???
 	     }
-	     
 	 }
 	}
 

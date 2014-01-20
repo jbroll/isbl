@@ -61,3 +61,9 @@
  ? [db eval { T %   !x }]	   { 4 9 }
  ? [db eval { T % y  * }]	   { 4 1 9 5 }
 
+ db eval { T += y ? % 4 as x 8 as y }			; # join on y update x ( no match )
+ ? [db eval T] { 1 4 5 9 }
+
+ db eval { T += y ? % 4 as x 9 as y }			; # join on y update x
+ ? [db eval T] { 1 4 4 9 }
+
