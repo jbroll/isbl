@@ -94,9 +94,14 @@ Command line examples:
     Martha	Jones	668
     Rose	Tyler	669
 
-    ./isbl sample.db eval 'T ? Id == 666'
-    667 Frank 666 John 665 John 668 Martha 669 Rose
-
+    ./isbl sample.db list 'T % Id, First'
+    Id	First
+    --	-----
+    667	Frank
+    666	John
+    665	John
+    668	Martha
+    669	Rose
 
 The pieces:
 
