@@ -1,6 +1,4 @@
 
-[JBR] - 2011-04-02
-
 ISBL is the original database query language.
 
 I first read about ISBL in early 2008 and it has been running about 
