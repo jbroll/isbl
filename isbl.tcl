@@ -164,7 +164,17 @@ proc intersect3 {list1 list2 inList1 inList2 inBoth} {
 		insert or replace into $tab $Val ;
 	     }]
 	 }
-	 += { set sql [subst { insert or replace into $tab $Val ; }] }
+	 += { 
+	     set create {}
+	     try { sql eval [subst { select 1 from $tab }]
+	     } on error message {
+		set create [subst {
+		    create table $tab ( [join [lindex $cStack end] ,] 
+			, constraint uc_set unique ( [join [map x [lindex $cStack end] { lindex $x 0 }] ,] )
+			    on conflict replace ) ;
+		}]
+	     }
+	     set sql [subst { $create insert or replace into $tab $Val ; }] }
 	 := { set sql [subst {
 		drop view  if exists $tab ;
 		drop table if exists $tab ;
@@ -360,7 +370,6 @@ proc intersect3 {list1 list2 inList1 inList2 inBoth} {
 	    set sql [lreplace $sql 0 0 "select * from $sql"]
 	}
 
-
 	#puts "ast : $ast"
 	#puts "sql : $sql"
 
@@ -375,6 +384,7 @@ proc intersect3 {list1 list2 inList1 inList2 inBoth} {
 	set sql {}
 	try { sql eval {*}[set sql [my isbl2sql $isbl]]
 	} on error message {
+	    puts "isbl: $isbl"
 	    puts "$message : $sql"
 	    error $message
 	}

@@ -5,7 +5,6 @@
 
  isbl : main.tcl isbl-$(VERSION).tm
 	mkdir -p isbl.vfs/modules/
-	cp main.tcl isbl.vfs/
 	cp isbl-$(VERSION).tm isbl.vfs/modules/isbl-$(VERSION).tm
 	sdx wrap isbl -runtime `which tclkit8.6`
 	make test
