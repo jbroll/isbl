@@ -95,6 +95,7 @@ Command line examples:
     Rose	Tyler	669
 
     ./isbl sample.db eval 'T ? Id == 666'
+    667 Frank 666 John 665 John 668 Martha 669 Rose
 
 
 The pieces:
