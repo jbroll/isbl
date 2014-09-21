@@ -321,7 +321,7 @@ snit::type ::isbl-parser {
         #     x
         #         (Table)
         #         (WS)
-        #         "+="
+        #         (UpdOp)
         #         (WS)
         #         (Cols)
         #         (WS)
@@ -346,7 +346,7 @@ snit::type ::isbl-parser {
         #     x
         #         (Table)
         #         (WS)
-        #         "+="
+        #         (UpdOp)
         #         (WS)
         #         (Cols)
         #         (WS)
@@ -372,7 +372,7 @@ snit::type ::isbl-parser {
         # x
         #     (Table)
         #     (WS)
-        #     "+="
+        #     (UpdOp)
         #     (WS)
         #     (Cols)
         #     (WS)
@@ -385,7 +385,7 @@ snit::type ::isbl-parser {
         $myparser si:valuevalue_part
         sym_WS
         $myparser si:valuevalue_part
-        $myparser si:next_str +=
+        sym_UpdOp
         $myparser si:valuevalue_part
         sym_WS
         $myparser si:valuevalue_part
@@ -2640,6 +2640,19 @@ snit::type ::isbl-parser {
     }
     
     #
+    # value Symbol 'UpdOp'
+    #
+    
+    proc sym_UpdOp {} { upvar 1 myparser myparser
+        # "+="
+    
+        $myparser si:void_symbol_start UpdOp
+        $myparser si:next_str +=
+        $myparser si:void_leaf_symbol_end UpdOp
+        return
+    }
+    
+    #
     # value Symbol 'Value'
     #
     
@@ -2659,12 +2672,12 @@ snit::type ::isbl-parser {
         #     (VName)
     
         $myparser si:value_symbol_start Value
-        choice_467
+        choice_469
         $myparser si:reduce_symbol_end Value
         return
     }
     
-    proc choice_467 {} { upvar 1 myparser myparser
+    proc choice_469 {} { upvar 1 myparser myparser
         # /
         #     x
         #         (RP)
@@ -2680,7 +2693,7 @@ snit::type ::isbl-parser {
         #     (VName)
     
         $myparser si:value_state_push
-        sequence_459
+        sequence_461
         $myparser si:valuevalue_branch
         sym_Func
         $myparser si:valuevalue_branch
@@ -2697,7 +2710,7 @@ snit::type ::isbl-parser {
         return
     }
     
-    proc sequence_459 {} { upvar 1 myparser myparser
+    proc sequence_461 {} { upvar 1 myparser myparser
         # x
         #     (RP)
         #     (WS)
@@ -2741,12 +2754,12 @@ snit::type ::isbl-parser {
         #     <space>
     
         $myparser si:void_void_symbol_start WS
-        kleene_473
+        kleene_475
         $myparser si:void_clear_symbol_end WS
         return
     }
     
-    proc kleene_473 {} { upvar 1 myparser myparser
+    proc kleene_475 {} { upvar 1 myparser myparser
         # *
         #     <space>
     

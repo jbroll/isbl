@@ -51,8 +51,9 @@
 	SumOp	<- "+" / "-" / "."			; # action token
 	Sum	<- Join WS (SumOp WS Join)*		;
 
+	UpdOp   <- "+="					;
 	AssOp   <- "=" / "+=" / "-=" / ":="		; # action token
-	Assign	<- Table WS "+=" WS Cols WS "?" WS RelExpr /
+	Assign	<- Table WS UpdOp WS Cols WS "?" WS RelExpr /
 		   Table WS AssOp WS RelExpr		;
 	 Comma  <- ","					; # action token
 	 Equ    <- "="					; # action token

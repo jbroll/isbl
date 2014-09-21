@@ -142,17 +142,44 @@ proc intersect3 {list1 list2 inList1 inList2 inBoth} {
     # The top level evaluation returns a list to evaluate
     #
     method TopExpr  { start end relexpr } { list [my {*}$relexpr] }
+    method UpdOp { args } { return UPDATE }
     method Assign   { start end args } { 			; # Insert into or Overwrie a table.
 
 	set tab [my {*}[lindex $args 0]]
 	set  op [my {*}[lindex $args 1]]
-	set val [my {*}[lindex $args 2]]
 	set drop {}
 	set sql  {}
 
+	if { $op eq "UPDATE" } {
+
+	    set col [my {*}[lindex $args 2]]
+	    set val [my {*}[lindex $args 3]]
+	    set Val $val
+	    if { [llength $val] == 1 } { set Val "select * from $val" }
+
+	     set ncols [map c [my cPop] { lindex $c 0 }]
+	     set tcols [map c [my cPop] { lindex $c 0 }]
+	     set scols [split $col ,]
+
+	     if { $tcols eq "" } { error "No table?" }
+
+	     intersect3 $ncols $tcols inN inT ccols
+	     intersect3 $ccols $scols ycols xxxx xcols
+
+	     return [list $Val [subst {
+		sql eval {
+		    update $tab
+		    set   [join [: col $ycols { [list $col=\$$col] }] ,]
+		    where [join [: col $xcols { [list $col=\$$col] }] " and "]
+		}
+	     }]]
+	}
+
+	set val [my {*}[lindex $args 2]]
 	set Val $val
 
 	if { [llength $val] == 1 } { set Val "select * from $val" }
+
 
 	switch $op {
 	 = { set sql [subst {
@@ -189,25 +216,7 @@ proc intersect3 {list1 list2 inList1 inList2 inBoth} {
 	    }]]
 	 }
 	 default {
-
-	     if { [lindex [lindex $args 1] 0] eq "Cols" } {
-		 set ncols [map c [my cPop] { lindex $c 0 }]	
-		 set tcols [map c [my cPop] { lindex $c 0 }]
-		 set scols [split $op ,]
-
-		 intersect3 $ncols $tcols inN inT ccols
-		 intersect3 $ccols $scols ycols xxxx xcols
-
-		 return [list $Val [subst {
-		    sql eval {
-			update $tab
-			set   [join [: col $ycols { [list $col=\$$col] }] ,]
-			where [join [: col $xcols { [list $col=\$$col] }] " and "]
-		    }
-	         }]]
-	     } else {
 		 error ???
-	     }
 	 }
 	}
 
